@@ -9,6 +9,7 @@ import { cart } from '@/lib/cart';
 import { completeCheckout, getAddress, saveAddress } from '@/lib/collection';
 import { rupiah } from '@/lib/format';
 import { payoffPlan, withInterest } from '@/lib/money';
+import { needsPaywall } from '@/lib/plan';
 import { getProfile, loadWallet } from '@/lib/profile';
 import { track } from '@/lib/track';
 import { colors, radius } from '@/theme';
@@ -39,6 +40,7 @@ export default function Checkout() {
   const [method, setMethod] = useState('QRIS');
 
   useEffect(() => {
+    needsPaywall().then((locked) => locked && router.replace('/paywall'));
     getAddress().then(setAddress);
     loadWallet().then((w) => {
       setBalance(w?.balance ?? 0);

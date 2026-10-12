@@ -6,6 +6,7 @@ import { Page, PrimaryButton } from '@/components/ui';
 import { cart, type CartItem, MAX_PRICE, MIN_PRICE, SAMPLE_ITEM } from '@/lib/cart';
 import { rupiah } from '@/lib/format';
 import { pickPhoto } from '@/lib/photo';
+import { needsPaywall } from '@/lib/plan';
 import { loadWallet } from '@/lib/profile';
 import { track } from '@/lib/track';
 import { colors, radius } from '@/theme';
@@ -46,9 +47,10 @@ export default function Barang() {
     }
   };
 
-  const checkout = () => {
+  const checkout = async () => {
     cart.item = item;
-    router.push('/checkout');
+    // Checkout number 4 for a free user opens the paywall instead.
+    router.push((await needsPaywall()) ? '/paywall' : '/checkout');
   };
 
   return (
