@@ -1,4 +1,5 @@
 import { Link } from 'expo-router';
+import Head from 'expo-router/head';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Tumbler } from '@/components/Tumbler';
 import { colors, maxWidth, radius } from '@/theme';
@@ -7,6 +8,9 @@ import { colors, maxWidth, radius } from '@/theme';
 export default function Landing() {
   return (
     <ScrollView contentContainerStyle={styles.page}>
+      <Head>
+        <title>Keranjang Impian: Checkout palsu. Dompet aman.</title>
+      </Head>
       <View style={styles.column}>
         <Text style={styles.brand}>Keranjang Impian</Text>
 
