@@ -3,6 +3,7 @@ import Head from 'expo-router/head';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Tumbler } from '@/components/Tumbler';
 import { PrimaryButton } from '@/components/ui';
+import { getProfile } from '@/lib/profile';
 import { track } from '@/lib/track';
 import { colors, maxWidth } from '@/theme';
 
@@ -29,9 +30,10 @@ export default function Landing() {
         <View style={styles.cta}>
           <PrimaryButton
             label="Coba checkout palsu"
-            onPress={() => {
+            onPress={async () => {
               track('start_tapped');
-              router.push('/mulai');
+              // Already answered the 2 questions on this phone: skip to the item.
+              router.push((await getProfile()) ? '/barang' : '/mulai');
             }}
           />
         </View>
