@@ -3,6 +3,7 @@ import Head from 'expo-router/head';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Tumbler } from '@/components/Tumbler';
 import { PrimaryButton } from '@/components/ui';
+import { getCheckoutCount } from '@/lib/collection';
 import { getProfile } from '@/lib/profile';
 import { track } from '@/lib/track';
 import { colors, maxWidth } from '@/theme';
@@ -32,8 +33,9 @@ export default function Landing() {
             label="Coba checkout palsu"
             onPress={async () => {
               track('start_tapped');
-              // Already answered the 2 questions on this phone: skip to the item.
-              router.push((await getProfile()) ? '/barang' : '/mulai');
+              // Returning on this phone: skip what they already did.
+              const [profile, count] = await Promise.all([getProfile(), getCheckoutCount()]);
+              router.push(count > 0 ? '/koleksi' : profile ? '/barang' : '/mulai');
             }}
           />
         </View>
