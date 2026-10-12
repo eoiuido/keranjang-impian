@@ -32,6 +32,19 @@ export function PrimaryButton({
   );
 }
 
+// Outlined button for the second choice on a screen.
+export function SecondaryButton({ label, onPress }: { label: string; onPress?: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      style={({ pressed }) => [styles.button, styles.secondary, pressed && styles.pressed]}
+    >
+      <Text style={[styles.buttonText, styles.secondaryText]}>{label}</Text>
+    </Pressable>
+  );
+}
+
 // "1 dari 2" step dots at the top of onboarding.
 export function Steps({ current, total }: { current: number; total: number }) {
   return (
@@ -53,6 +66,8 @@ const styles = StyleSheet.create({
     paddingVertical: 18,
     alignItems: 'center',
   },
+  secondary: { backgroundColor: 'transparent', borderWidth: 2, borderColor: colors.button, paddingVertical: 16 },
+  secondaryText: { color: colors.button },
   pressed: { opacity: 0.85 },
   disabled: { opacity: 0.4 },
   buttonText: { color: colors.buttonText, fontSize: 18, fontWeight: '700' },

@@ -4,15 +4,16 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { FakeQR } from '@/components/FakeQR';
 import { ItemPicture } from '@/components/ItemPicture';
 import { ScanAnimation } from '@/components/ScanAnimation';
-import { Page, PrimaryButton } from '@/components/ui';
+import { Page, PrimaryButton, SecondaryButton } from '@/components/ui';
 import { cart } from '@/lib/cart';
 import { completeCheckout, getAddress, saveAddress } from '@/lib/collection';
 import { rupiah } from '@/lib/format';
-import { getWallet } from '@/lib/profile';
+import { payoffPlan, withInterest } from '@/lib/money';
+import { getProfile, loadWallet } from '@/lib/profile';
 import { track } from '@/lib/track';
 import { colors, radius } from '@/theme';
 
-type Stage = 'cart' | 'pay' | 'qris' | 'scan' | 'processing';
+type Stage = 'cart' | 'hutang' | 'pay' | 'qris' | 'scan' | 'processing';
 
 // Generic payment names with our own simple icons; no real company names or logos.
 const METHODS = [
@@ -26,17 +27,24 @@ const METHODS = [
 const MIN_ADDRESS = 10;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// S5-S7. Fake checkout: cart + address, payment choice, fake QRIS, scan.
+// S5-S7. Fake checkout: cart + address, (hutang), payment choice, fake QRIS, scan.
 export default function Checkout() {
   const item = cart.item;
   const [stage, setStage] = useState<Stage>('cart');
   const [address, setAddress] = useState('');
   const [balance, setBalance] = useState<number | null>(null);
+  const [debt, setDebt] = useState(0);
+  const [monthly, setMonthly] = useState(0);
+  const [useHutang, setUseHutang] = useState(false);
   const [method, setMethod] = useState('QRIS');
 
   useEffect(() => {
     getAddress().then(setAddress);
-    getWallet().then((w) => setBalance(w?.balance ?? 0));
+    loadWallet().then((w) => {
+      setBalance(w?.balance ?? 0);
+      setDebt(w?.debt ?? 0);
+    });
+    getProfile().then((p) => setMonthly(p ? p.money - p.expenses : 0));
   }, []);
 
   if (!item) return <Redirect href="/barang" />;
@@ -45,24 +53,27 @@ export default function Checkout() {
   const addressOk = address.trim().length >= MIN_ADDRESS;
 
   const back = () => {
-    if (stage === 'pay') setStage('cart');
+    if (stage === 'hutang') setStage('cart');
+    else if (stage === 'pay') setStage(useHutang ? 'hutang' : 'cart');
     else if (stage === 'qris') setStage('pay');
     else router.back();
   };
 
-  const toPayment = async () => {
+  const toPayment = async (hutang: boolean) => {
     await saveAddress(address.trim());
-    setStage('pay');
+    setUseHutang(hutang);
+    setStage(hutang ? 'hutang' : 'pay');
   };
 
   const scanAndPay = async () => {
     setStage('scan');
     await wait(1800);
     setStage('processing');
-    const [result] = await Promise.all([completeCheckout(item, method), wait(1000)]);
+    const [result] = await Promise.all([completeCheckout(item, method, useHutang), wait(1000)]);
     cart.item = null;
     if (result.count === 1) track('first_fake_checkout_done', { price: item.price });
     track('fake_checkout_done', { count: result.count, price: item.price, method });
+    if (result.item.hutang > 0) track('hutang_used', { amount: result.item.hutang });
     router.replace('/berhasil');
   };
 
@@ -75,7 +86,13 @@ export default function Checkout() {
             <Text style={styles.back}>‹ Kembali</Text>
           </Pressable>
           <Text style={styles.headerTitle}>
-            {stage === 'cart' ? 'Keranjang' : stage === 'pay' ? 'Pilih pembayaran' : 'Pembayaran'}
+            {stage === 'cart'
+              ? 'Keranjang'
+              : stage === 'hutang'
+                ? 'Hutang'
+                : stage === 'pay'
+                  ? 'Pilih pembayaran'
+                  : 'Pembayaran'}
           </Text>
           <View style={{ width: 70 }} />
         </View>
@@ -130,14 +147,19 @@ export default function Checkout() {
               ))}
 
             <View style={styles.bottom}>
+              {short > 0 && addressOk && (
+                <SecondaryButton label={`Pakai Hutang ${rupiah(short)}`} onPress={() => toPayment(true)} />
+              )}
               <PrimaryButton
                 label={addressOk ? (short > 0 ? 'Tetap checkout' : 'Pilih pembayaran') : 'Isi alamat dulu'}
-                onPress={toPayment}
+                onPress={() => toPayment(false)}
                 disabled={!addressOk}
               />
             </View>
           </>
         )}
+
+        {stage === 'hutang' && <HutangInfo amount={short} existing={debt} monthly={monthly} onYes={() => setStage('pay')} onNo={back} />}
 
         {stage === 'pay' && (
           <>
@@ -191,6 +213,55 @@ export default function Checkout() {
   );
 }
 
+// S5b. Fake paylater: show the true cost before they agree.
+function HutangInfo({
+  amount,
+  existing,
+  monthly,
+  onYes,
+  onNo,
+}: {
+  amount: number;
+  existing: number;
+  monthly: number;
+  onYes: () => void;
+  onNo: () => void;
+}) {
+  const total = existing + amount;
+  const next = withInterest(total);
+  const plan = payoffPlan(total, monthly);
+  return (
+    <>
+      <View style={[styles.card, styles.hutangCard]}>
+        <Text style={styles.hutangLabel}>Hutang baru</Text>
+        <Text style={styles.hutangAmount}>{rupiah(amount)}</Text>
+        {existing > 0 && <Text style={styles.hutangText}>Total hutangmu jadi {rupiah(total)}.</Text>}
+        <Text style={styles.hutangText}>
+          Bulan depan dipotong {rupiah(next)} dari saldomu (bunga 5%/bulan). Kalau belum lunas, sisanya kena 5% lagi.
+        </Text>
+      </View>
+
+      <View style={[styles.balanceBox, { backgroundColor: plan && plan.months <= 12 ? colors.lavender : colors.butter }]}>
+        <Text style={styles.balanceText}>
+          {plan
+            ? `Perkiraan lunas: ${plan.months} bulan. Total yang kamu bayar: ${rupiah(plan.totalPaid)}.`
+            : `Dengan saldo bulanan ${rupiah(monthly)}, hutang ini gak akan pernah lunas.`}
+        </Text>
+        {plan && plan.months > 12 && (
+          <Text style={[styles.balanceText, styles.warn]}>Ini butuh lebih dari 12 bulan buat lunas.</Text>
+        )}
+      </View>
+
+      <Text style={styles.sim}>Simulasi. Bukan pinjaman beneran.</Text>
+
+      <View style={styles.bottom}>
+        <SecondaryButton label="Gak jadi" onPress={onNo} />
+        <PrimaryButton label="Ya, pakai hutang" onPress={onYes} />
+      </View>
+    </>
+  );
+}
+
 function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
   return (
     <View style={styles.row}>
@@ -227,7 +298,13 @@ const styles = StyleSheet.create({
   divider: { height: 1, backgroundColor: colors.pink },
   balanceBox: { marginTop: 16, borderRadius: radius.md, padding: 14 },
   balanceText: { fontSize: 15, lineHeight: 21, color: colors.text, textAlign: 'center' },
-  bottom: { marginTop: 'auto', paddingTop: 24 },
+  bottom: { marginTop: 'auto', paddingTop: 24, gap: 10 },
+  hutangCard: { alignItems: 'center', backgroundColor: colors.card },
+  hutangLabel: { fontSize: 15, color: colors.textSoft },
+  hutangAmount: { fontSize: 34, fontWeight: '900', color: colors.pinkDeep },
+  hutangText: { fontSize: 15, lineHeight: 21, color: colors.text, textAlign: 'center' },
+  warn: { marginTop: 6, fontWeight: '700' },
+  sim: { marginTop: 16, fontSize: 14, fontWeight: '700', color: colors.textSoft, textAlign: 'center' },
   bottomFull: { alignSelf: 'stretch', marginTop: 24 },
   methods: { gap: 10 },
   method: {

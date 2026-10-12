@@ -1,4 +1,5 @@
 import { monthKey } from './format';
+import { monthsBetween, rollover } from './money';
 import { getItem, setItem } from './store';
 
 export type Profile = {
@@ -17,13 +18,27 @@ export type Wallet = {
 export const draft = { money: 0, expenses: 1_000_000 };
 
 export const getProfile = () => getItem<Profile>('profile');
-export const getWallet = () => getItem<Wallet>('wallet');
+
+// The wallet, brought up to this month first: for every month change since the
+// last visit, debt gets 5%, the month's money is added and debt is paid from it.
+export async function loadWallet(): Promise<Wallet | undefined> {
+  const [wallet, profile] = await Promise.all([getItem<Wallet>('wallet'), getProfile()]);
+  if (!wallet || !profile) return wallet;
+  const now = monthKey();
+  const months = monthsBetween(wallet.lastMonth, now);
+  if (months === 0) return wallet;
+  const next: Wallet = { ...rollover(wallet, profile.money - profile.expenses, months), lastMonth: now };
+  await setItem('wallet', next);
+  return next;
+}
+
+export const saveWallet = (w: Wallet) => setItem('wallet', w);
 
 // Finish onboarding: save the answers and give this month's balance.
 export async function completeOnboarding(money: number, expenses: number): Promise<void> {
   const month = monthKey();
   await setItem<Profile>('profile', { money, expenses, startMonth: month });
-  const existing = await getWallet();
+  const existing = await getItem<Wallet>('wallet');
   if (!existing) {
     await setItem<Wallet>('wallet', { balance: money - expenses, debt: 0, lastMonth: month });
   }

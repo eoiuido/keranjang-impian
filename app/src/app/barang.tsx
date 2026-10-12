@@ -6,7 +6,7 @@ import { Page, PrimaryButton } from '@/components/ui';
 import { cart, type CartItem, MAX_PRICE, MIN_PRICE, SAMPLE_ITEM } from '@/lib/cart';
 import { rupiah } from '@/lib/format';
 import { pickPhoto } from '@/lib/photo';
-import { getWallet } from '@/lib/profile';
+import { loadWallet } from '@/lib/profile';
 import { track } from '@/lib/track';
 import { colors, radius } from '@/theme';
 
@@ -22,7 +22,7 @@ export default function Barang() {
   const [price, setPrice] = useState(0);
 
   useEffect(() => {
-    getWallet().then((w) => setBalance(w ? w.balance : null));
+    loadWallet().then((w) => setBalance(w ? w.balance : null));
   }, []);
 
   if (balance === null) return <Redirect href="/mulai" />; // onboarding not done yet

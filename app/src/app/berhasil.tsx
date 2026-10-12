@@ -5,13 +5,14 @@ import { ItemPicture } from '@/components/ItemPicture';
 import { Page, PrimaryButton } from '@/components/ui';
 import { last } from '@/lib/collection';
 import { rupiah } from '@/lib/format';
+import { withInterest } from '@/lib/money';
 import { colors, radius } from '@/theme';
 
 // S8. Success: the "aha" moment.
 export default function Berhasil() {
   const result = last.result;
   if (!result) return <Redirect href="/koleksi" />;
-  const { item, before, after } = result;
+  const { item, before, after, debt } = result;
 
   return (
     <View style={{ flex: 1 }}>
@@ -29,6 +30,12 @@ export default function Berhasil() {
           <Text style={styles.cardValue}>
             {rupiah(before)} → {rupiah(after)}
           </Text>
+          {item.hutang > 0 && (
+            <Text style={styles.debt}>
+              Hutang baru {rupiah(item.hutang)} · Total hutang {rupiah(debt)}
+              {'\n'}Bulan depan dipotong {rupiah(withInterest(debt))}
+            </Text>
+          )}
         </View>
 
         <View style={styles.bottom}>
@@ -61,6 +68,7 @@ const styles = StyleSheet.create({
   sub: { marginTop: 8, fontSize: 16, lineHeight: 22, color: colors.textSoft, textAlign: 'center' },
   card: { marginTop: 24, backgroundColor: colors.card, borderRadius: radius.md, padding: 16, alignItems: 'center' },
   cardLabel: { fontSize: 14, color: colors.textSoft },
+  debt: { marginTop: 8, fontSize: 14, lineHeight: 20, color: colors.pinkDeep, textAlign: 'center', fontWeight: '600' },
   cardValue: { marginTop: 4, fontSize: 20, fontWeight: '800', color: colors.text },
   bottom: { marginTop: 'auto', paddingTop: 24, gap: 6 },
   again: { alignSelf: 'center', padding: 12 },
