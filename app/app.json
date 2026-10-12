@@ -31,9 +31,6 @@
     "plugins": [
       "expo-router"
     ],
-    "scheme": "keranjangimpian",
-    "experiments": {
-      "typedRoutes": true
-    }
+    "scheme": "keranjangimpian"
   }
 }

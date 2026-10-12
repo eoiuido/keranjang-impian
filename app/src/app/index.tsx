@@ -1,8 +1,10 @@
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import Head from 'expo-router/head';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Tumbler } from '@/components/Tumbler';
-import { colors, maxWidth, radius } from '@/theme';
+import { PrimaryButton } from '@/components/ui';
+import { track } from '@/lib/track';
+import { colors, maxWidth } from '@/theme';
 
 // S1. Landing: keeps the ad's promise with one headline and one button.
 export default function Landing() {
@@ -24,11 +26,15 @@ export default function Landing() {
         </Text>
         <Text style={styles.sub}>Beli barang impianmu tanpa keluar uang beneran.</Text>
 
-        <Link href="/mulai" asChild>
-          <Pressable style={styles.button} accessibilityRole="button">
-            <Text style={styles.buttonText}>Coba checkout palsu</Text>
-          </Pressable>
-        </Link>
+        <View style={styles.cta}>
+          <PrimaryButton
+            label="Coba checkout palsu"
+            onPress={() => {
+              track('start_tapped');
+              router.push('/mulai');
+            }}
+          />
+        </View>
         <Text style={styles.note}>Gratis 3 kali. Tanpa daftar.</Text>
 
         <View style={styles.footer}>
@@ -63,15 +69,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   sub: { marginTop: 12, fontSize: 17, lineHeight: 24, color: colors.textSoft, textAlign: 'center' },
-  button: {
-    marginTop: 32,
-    alignSelf: 'stretch',
-    backgroundColor: colors.button,
-    borderRadius: radius.pill,
-    paddingVertical: 18,
-    alignItems: 'center',
-  },
-  buttonText: { color: colors.buttonText, fontSize: 18, fontWeight: '700' },
+  cta: { marginTop: 32, alignSelf: 'stretch' },
   note: { marginTop: 10, fontSize: 14, color: colors.textSoft },
   footer: { marginTop: 'auto', paddingTop: 32, alignItems: 'center', gap: 8 },
   footerLink: { fontSize: 15, color: colors.text, textDecorationLine: 'underline' },
