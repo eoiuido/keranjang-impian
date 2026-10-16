@@ -1,0 +1,29 @@
+# Keranjang Impian: one Cloudflare Worker serves the web app (static files)
+# and the server API under /api/*.
+name = "keranjang-impian"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+# The exported web app (built from ../app with `npx expo export --platform web`).
+[assets]
+directory = "../app/dist"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "keranjang-impian"
+database_id = "local-only-until-created" # replaced by the real id after `wrangler d1 create`
+migrations_dir = "migrations"
+
+# Safety net: ask DOKU about pending orders every 5 minutes.
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+DOKU_BASE_URL = "https://api-sandbox.doku.com" # production: https://api.doku.com
+APP_URL = "http://localhost:8090" # where DOKU sends the buyer back after paying
+ALLOWED_ORIGIN = "http://localhost:8090" # dev only: the Expo dev server
+
+# Secrets (never in this file): DOKU_CLIENT_ID, DOKU_SECRET_KEY.
+# Local: put them in .dev.vars. Online: `npx wrangler secret put DOKU_SECRET_KEY`.

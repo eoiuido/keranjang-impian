@@ -105,10 +105,10 @@ Number format everywhere: Indonesian (Rp79.000, 35,5%).
 **S11. Email** (before real payment)
 - "Email kamu (buat simpan akses & backup)." Shows the email again for confirmation: "Pastikan benar: nama@email.com".
 
-**S12. Real payment (DOKU QRIS)**: must look clearly different from the fake one
-- Banner: **"Pembayaran ASLI"**, in a different colour (no pastel PALSU stamp), with the real amount (Rp10.000 / Rp79.000 / Rp59.000).
-- A real QR from DOKU, a **"Simpan QR"** button and steps: "Buka aplikasi bank/e-wallet, Scan, pilih dari galeri."
-- Status: "Menunggu pembayaran…", checked every few seconds. Countdown until the QR expires.
+**S12. Real payment (DOKU Checkout page)**: must look clearly different from the fake one
+- Before leaving our app: a **"Pembayaran ASLI"** screen in a different colour (no pastel PALSU stamp) with the real amount (Rp10.000 / Rp79.000 / Rp59.000), and "Kamu akan dibawa ke halaman pembayaran DOKU."
+- **DOKU's own payment page** shows QRIS and e-wallets (OVO, DANA, ShopeePay, LinkAja). E-wallet buttons open the e-wallet app on the same phone; QRIS can be scanned or saved.
+- After paying, DOKU sends the user back to our app: "Menunggu konfirmasi…", checked every few seconds, then S13.
 
 **S13. Paid**
 - "Terima kasih! Akses aktif sampai [tanggal]."
@@ -169,25 +169,29 @@ Number format everywhere: Indonesian (Rp79.000, 35,5%).
 
 ---
 
-## 5. Payment flow with DOKU (QRIS)
+## 5. Payment flow with DOKU Checkout (QRIS + e-wallets)
+
+_Changed 2026-10-16 (owner decision): DOKU Checkout (DOKU's hosted page) instead of a direct QRIS API. Direct QRIS needs a separate QRIS registration (merchant/terminal ID) and more complex signing; Checkout also lets e-wallets open on the same phone._
 
 Development uses **DOKU sandbox** (test mode). The owner must finish DOKU merchant registration before going live.
 
 1. The user picks a plan (S10/S10b) and enters their email (S11).
 2. The app asks **our server** (a Cloudflare Worker) to create an order. The server sets the price itself, so the browser can't change it. The decline price is allowed only if the device hasn't used the offer before (also checked on the server, per email).
-3. The server asks DOKU for a QRIS and gets back the QR code and an expiry time (about 15 minutes). The order is saved as `pending`.
-4. The app shows the real QR (S12) and asks our server about the order every 3 seconds.
-5. The user pays in their bank or e-wallet app. **DOKU sends a notification (webhook) to our server.** The server checks DOKU's signature, marks the order `paid` and gives access. **Paid features unlock only from this server step, never because the browser says so.**
+3. The server asks DOKU Checkout for a payment page (QRIS + e-wallets, valid 30 minutes) and gets back its link. The order is saved as `pending`. If an unpaid, unexpired order for the same email, plan and price already exists, its link is reused instead (prevents double payment).
+4. The app opens DOKU's page (S12). After paying, DOKU sends the user back to our app, which asks our server about the order every 3 seconds.
+5. The user pays with QRIS or an e-wallet. **DOKU sends a notification (webhook) to our server.** The server checks DOKU's signature, marks the order `paid` and gives access. **Paid features unlock only from this server step, never because the browser says so.**
 6. The app sees `paid` and shows S13. The server sends the Meta "Purchase" event (Conversions API).
 
 **What if…**
 - **The webhook is late:** the screen shows "Menunggu konfirmasi…". After 1 minute without news, our server asks DOKU directly about the status (still server-side). The order stays checkable for 24 hours. A note says "Sudah bayar tapi belum aktif? Hubungi eoi.uido@gmail.com dengan bukti bayar."
-- **The QR expires before payment:** "QR kadaluarsa" with a "Buat QR baru" button. The order is marked `expired`.
+- **The payment page expires before payment (30 minutes):** "Waktu bayar habis" with a "Coba lagi" button. The order is marked `expired`.
 - **Payment fails or is cancelled:** "Pembayaran gagal, tidak ada uang yang terpotong" with a "Coba lagi" button.
 - **They paid, then closed the page:** the pending order id is saved on the phone. On next open, the app checks it and unlocks if paid. On another device, they restore with their email code.
 - **They paid twice:** the second payment adds more time (it's never lost). The refund policy covers accidental double payments.
-- **The webhook arrives twice:** handled only once (checked by DOKU reference).
-- **Saving the QR is hard inside Instagram's browser:** "Simpan QR" downloads an image; if that's blocked, we show "Tekan lama gambar QR → Simpan" and an "Buka di Chrome" option. **This must be tested on a real phone before ads start.**
+- **The webhook arrives twice:** handled only once (an order can only change to `paid` once).
+- **Paid amount differs from the price:** the order is flagged for a manual check (refund policy).
+- **Server safety net:** every 5 minutes the server asks DOKU about pending orders, in case a notification was lost.
+- **DOKU's page and e-wallet hand-off inside Instagram's browser must be tested on a real phone before ads start.**
 
 ---
 
@@ -243,7 +247,7 @@ No income, address, photos or email are sent to analytics.
 ## 9. Technical
 
 - **Expo (React Native) for web**, so a phone app can be built later from the same code.
-- **Cloudflare:** Pages for the web app, a Worker for orders, the DOKU webhook, login codes, backup, push and the Meta Conversions API, and D1 for the database. No R2 (photos aren't stored online).
+- **Cloudflare:** one Worker serves both the web app (static files) and the server API (orders, DOKU webhook, login codes, backup, push, Meta Conversions API), with D1 for the database. Same address for both, so no cross-site setup. No R2 (photos aren't stored online).
 - **Email** (login codes): a light email service (e.g. Resend's free tier).
 - **Push:** standard Web Push (works on Android Chrome; iPhone only after "Add to Home Screen").
 - Code saved to the owner's GitHub.
@@ -252,7 +256,7 @@ No income, address, photos or email are sent to analytics.
 
 ## 10. Before launching ads (owner's checklist)
 
-Breakeven ad cost per buyer = price × 0,993 / 1,11:
+Breakeven ad cost per buyer = price × 0,993 / 1,11 (0,993 assumes the QRIS fee of 0,7%; e-wallet payments have a higher fee, so check DOKU's price list):
 
 | Plan | Price | Breakeven per buyer |
 |---|---|---|
