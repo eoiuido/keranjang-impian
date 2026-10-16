@@ -45,7 +45,7 @@ export default function Landing() {
           <Link href="/masuk" style={styles.footerLink}>
             Sudah bayar? Masuk
           </Link>
-          <Text style={styles.footerSmall}>Privasi · Ketentuan · eoi.uido@gmail.com</Text>
+          <Text style={styles.footerSmall}>Keranjang Impian by EOI · Privasi · Ketentuan · eoi.uido@gmail.com</Text>
         </View>
       </View>
     </ScrollView>

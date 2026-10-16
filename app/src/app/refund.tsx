@@ -14,6 +14,7 @@ export default function Refund() {
 
       <Text style={styles.h}>Uang kembali kalau:</Text>
       <Text style={styles.p}>• Kamu terpotong dua kali untuk pembayaran yang sama.</Text>
+      <Text style={styles.p}>• Jumlah yang terpotong beda dengan harga yang tertulis di layar.</Text>
       <Text style={styles.p}>• Kamu sudah bayar, tapi akses tidak aktif dalam 24 jam dan kami tidak bisa memperbaikinya.</Text>
 
       <Text style={styles.h}>Cara minta bantuan</Text>
@@ -34,7 +35,7 @@ export default function Refund() {
 
       <Text style={styles.h}>Refund & Contact (English)</Text>
       <Text style={styles.p}>
-        We refund double charges, or payments where access isn't activated within 24 hours and we can't fix it. Email
+        We refund double charges, charges that differ from the price shown, or payments where access isn't activated within 24 hours and we can't fix it. Email
         eoi.uido@gmail.com with your payment email and a screenshot of the payment. Plans are one-time payments and never
         renew automatically.
       </Text>
