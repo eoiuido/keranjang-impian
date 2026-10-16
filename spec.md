@@ -14,8 +14,8 @@ Number format everywhere: Indonesian (Rp79.000, 35,5%).
 | Look | Cute pastel, our own icons, no real brand logos or designs |
 | Free | 3 fake checkouts (including the sample item), balance and hutang included |
 | Paid | Unlimited checkouts, savings goal, total saved, monthly recap, online backup, push reminders |
-| Prices | **Weekly Rp10.000** (7 days, no auto-renew), **Yearly Rp79.000** |
-| Decline offer | Shown once: weekly stays Rp10.000, **yearly becomes Rp59.000** |
+| Prices | **Weekly Rp10.000** (7 days, no auto-renew), **Yearly Rp119.000** (changed from Rp79.000 on 2026-10-16) |
+| Decline offer | Shown once: weekly stays Rp10.000, **yearly becomes Rp99.000** (was Rp59.000) |
 | Account | No login while free (data on the phone). Email at payment, then data is backed up online |
 | Photos | On the phone only, compressed. Never uploaded |
 | Onboarding | 2 sliders: monthly money and monthly expenses. Rp0 to Rp20.000.000, steps of Rp100.000, with − / + buttons |
@@ -94,19 +94,19 @@ Number format everywhere: Indonesian (Rp79.000, 35,5%).
 - What you get: unlimited checkouts, savings goal, total saved, monthly recap, online backup (works on a new phone), sale-day reminders.
 - Two plans, each with its price and period in plain words:
   - **Mingguan Rp10.000 / 7 hari.** Doesn't renew automatically; pay again when you want to continue.
-  - **Tahunan Rp79.000 / 1 tahun.** Badge: "Paling hemat: cuma Rp1.519/minggu".
+  - **Tahunan Rp119.000 / 1 tahun.** Badge: "Paling hemat: cuma Rp2.288/minggu".
 - Footer: "Bantuan: eoi.uido@gmail.com" and the refund policy link.
 - Button "Nanti saja" closes it, then S10b.
 
 **S10b. Decline offer** (once per device, ever)
-- "Tunggu! Tahunan cuma **Rp59.000** (hemat Rp20.000). Penawaran ini cuma muncul sekali."
+- "Tunggu! Tahunan cuma **Rp99.000** (hemat Rp20.000). Penawaran ini cuma muncul sekali."
 - Weekly stays Rp10.000. Closing it again returns to home; the collection stays visible, but new checkouts lead back to S10 (without the offer).
 
 **S11. Email** (before real payment)
 - "Email kamu (buat simpan akses & backup)." Shows the email again for confirmation: "Pastikan benar: nama@email.com".
 
 **S12. Real payment (DOKU Checkout page)**: must look clearly different from the fake one
-- Before leaving our app: a **"Pembayaran ASLI"** screen in a different colour (no pastel PALSU stamp) with the real amount (Rp10.000 / Rp79.000 / Rp59.000), and "Kamu akan dibawa ke halaman pembayaran DOKU."
+- Before leaving our app: a **"Pembayaran ASLI"** screen in a different colour (no pastel PALSU stamp) with the real amount (Rp10.000 / Rp119.000 / Rp99.000), and "Kamu akan dibawa ke halaman pembayaran DOKU."
 - **DOKU's own payment page** shows QRIS and e-wallets (OVO, DANA, ShopeePay, LinkAja). E-wallet buttons open the e-wallet app on the same phone; QRIS can be scanned or saved.
 - After paying, DOKU sends the user back to our app: "Menunggu konfirmasi…", checked every few seconds, then S13.
 
@@ -261,8 +261,8 @@ Breakeven ad cost per buyer = price × 0,993 / 1,11 (0,993 assumes the QRIS fee 
 | Plan | Price | Breakeven per buyer |
 |---|---|---|
 | Weekly | Rp10.000 | ≈ Rp8.900 |
-| Yearly | Rp79.000 | ≈ Rp70.600 |
-| Yearly (decline offer) | Rp59.000 | ≈ Rp52.700 |
+| Yearly | Rp119.000 | ≈ Rp106.400 |
+| Yearly (decline offer) | Rp99.000 | ≈ Rp88.500 |
 
 - [ ] **Target CAC:** depends on how many buyers pick weekly vs yearly. Write down a number a bit below the breakeven of your expected mix (start cautious, e.g. Rp30.000), and adjust after the first 10 buyers.
 - [ ] **Kill rule:** for each ad, 0 sales after 2 × target CAC means kill. Early sales mean more budget. Clicks but no sales mean stop adding money.

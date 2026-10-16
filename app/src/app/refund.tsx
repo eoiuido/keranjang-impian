@@ -26,7 +26,7 @@ export default function Refund() {
 
       <Text style={styles.h}>Yang perlu kamu tahu</Text>
       <Text style={styles.p}>
-        • Paket Mingguan (Rp10.000 / 7 hari) dan Tahunan (Rp79.000 / 1 tahun) dibayar sekali, tidak diperpanjang
+        • Paket Mingguan (Rp10.000 / 7 hari) dan Tahunan (Rp119.000 / 1 tahun) dibayar sekali, tidak diperpanjang
         otomatis.
       </Text>
       <Text style={styles.p}>

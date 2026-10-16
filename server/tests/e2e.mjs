@@ -117,14 +117,14 @@ try {
     assert.equal((await api('/api/orders', { method: 'POST', body: JSON.stringify({ email, plan: 'monthly' }) })).status, 400);
   });
 
-  await step('creates a yearly order at Rp79.000 with a DOKU page (QRIS + e-wallets)', async () => {
+  await step('creates a yearly order at Rp119.000 with a DOKU page (QRIS + e-wallets)', async () => {
     const r = await api('/api/orders', { method: 'POST', body: JSON.stringify({ email: ' Pembeli.Test@Example.com ', plan: 'yearly' }) });
     assert.equal(r.status, 200, JSON.stringify(r.body));
     yearly = r.body;
-    assert.equal(yearly.amount, 79_000);
+    assert.equal(yearly.amount, 119_000);
     assert.match(yearly.paymentUrl, /\/pay\/KI-/);
     const sent = mock.created.at(-1);
-    assert.equal(sent.order.amount, 79_000);
+    assert.equal(sent.order.amount, 119_000);
     assert.equal(sent.customer.email, email);
     assert.deepEqual(sent.payment.payment_method_types, ['QRIS', 'EMONEY_OVO', 'EMONEY_DANA', 'EMONEY_SHOPEE_PAY', 'EMONEY_LINKAJA']);
     assert.equal(mock.badSignatures, 0, 'our signature to DOKU must be valid');
@@ -148,7 +148,7 @@ try {
   });
 
   await step('a notification with a wrong signature is refused and unlocks nothing', async () => {
-    assert.equal((await notify(yearly, 'SUCCESS', 79_000, false)).status, 401);
+    assert.equal((await notify(yearly, 'SUCCESS', 119_000, false)).status, 401);
     assert.equal((await api(`/api/orders/${yearly.orderId}`)).body.status, 'pending');
   });
 
@@ -171,13 +171,13 @@ try {
   });
 
   let offerOrder;
-  await step('decline offer gives Rp59.000', async () => {
+  await step('decline offer gives Rp99.000', async () => {
     offerOrder = (await api('/api/orders', { method: 'POST', body: JSON.stringify({ email, plan: 'yearly', offer: true }) })).body;
-    assert.equal(offerOrder.amount, 59_000);
+    assert.equal(offerOrder.amount, 99_000);
   });
 
   await step('lost notification: the 5-minute safety net asks DOKU and unlocks (waits ~1 minute)', async () => {
-    mock.status.set(offerOrder.orderId, { status: 'SUCCESS', amount: 59_000 });
+    mock.status.set(offerOrder.orderId, { status: 'SUCCESS', amount: 99_000 });
     await sleep(62_000); // the safety net only looks at orders older than 1 minute
     await fetch(API + '/__scheduled?cron=*/5+*+*+*+*');
     await sleep(1_000);
@@ -188,7 +188,7 @@ try {
 
   await step('the offer price works only once per email', async () => {
     const r = await api('/api/orders', { method: 'POST', body: JSON.stringify({ email, plan: 'yearly', offer: true }) });
-    assert.equal(r.body.amount, 79_000);
+    assert.equal(r.body.amount, 119_000);
   });
 
   await step('paid amount different from the price goes to manual review, no access', async () => {

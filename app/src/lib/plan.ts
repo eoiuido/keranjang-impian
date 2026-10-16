@@ -8,10 +8,10 @@ export type PlanId = 'weekly' | 'yearly';
 
 export const PLANS = {
   weekly: { name: 'Mingguan', price: 10_000, period: '7 hari' },
-  yearly: { name: 'Tahunan', price: 79_000, offerPrice: 59_000, period: '1 tahun' },
+  yearly: { name: 'Tahunan', price: 119_000, offerPrice: 99_000, period: '1 tahun' },
 } as const;
 
-// Price for one week of the yearly plan, e.g. Rp79.000 / 52 = Rp1.519.
+// Price for one week of the yearly plan, e.g. Rp119.000 / 52 = Rp2.288.
 export const perWeek = (yearly: number) => Math.round(yearly / 52);
 
 // Paid access on this phone. Only our server sets it, after DOKU confirms payment.
