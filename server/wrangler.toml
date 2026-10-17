@@ -6,6 +6,8 @@ compatibility_date = "2026-10-01"
 
 # Online address of this app (EOI domain, one subdomain per app).
 routes = [{ pattern = "keranjang.eoi-apps.my.id", custom_domain = true }]
+workers_dev = false # only the address above, no extra *.workers.dev copy
+preview_urls = false
 
 # The exported web app (built from ../app with `npx expo export --platform web`).
 [assets]
