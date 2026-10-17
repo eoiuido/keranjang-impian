@@ -3,7 +3,9 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Page, PrimaryButton } from '@/components/ui';
 import { ApiError, requestLoginCode, verifyLoginCode } from '@/lib/api';
+import { restoreBackup, syncBackup } from '@/lib/backup';
 import { saveAccess } from '@/lib/plan';
+import { getProfile } from '@/lib/profile';
 import { setItem } from '@/lib/store';
 import { track } from '@/lib/track';
 import { colors, radius } from '@/theme';
@@ -58,9 +60,11 @@ export default function Masuk() {
       await setItem('session', r.token);
       await setItem('payEmail', r.email);
       track('restore_login');
+      await restoreBackup(r.token); // balance, debt and items come back (photos stay on the old phone)
       if (r.plan && r.endsAt && new Date(r.endsAt).getTime() > Date.now()) {
         await saveAccess({ plan: r.plan, endsAt: r.endsAt, email: r.email });
-        router.replace('/koleksi');
+        syncBackup();
+        router.replace((await getProfile()) ? '/koleksi' : '/mulai');
         return;
       }
       setExpiredAccess(true);

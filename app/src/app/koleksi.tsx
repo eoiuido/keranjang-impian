@@ -3,13 +3,14 @@ import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { ItemPicture } from '@/components/ItemPicture';
 import { Page, PrimaryButton } from '@/components/ui';
+import { syncBackupIfDirty } from '@/lib/backup';
 import { getCheckoutCount, getItems, type SavedItem } from '@/lib/collection';
 import { rupiah } from '@/lib/format';
-import { FREE_CHECKOUTS, getPendingOrder, type PendingOrder } from '@/lib/plan';
+import { type Access, FREE_CHECKOUTS, getAccess, getPendingOrder, type PendingOrder, PLANS } from '@/lib/plan';
 import { loadWallet, type Wallet } from '@/lib/profile';
 import { colors, maxWidth, radius } from '@/theme';
 
-type Data = { wallet: Wallet; items: SavedItem[]; count: number; pending: PendingOrder | null };
+type Data = { wallet: Wallet; items: SavedItem[]; count: number; pending: PendingOrder | null; access: Access | null };
 
 const GAP = 12;
 
@@ -21,8 +22,10 @@ export default function Koleksi() {
   // Reload every time this screen is shown (e.g. after another checkout).
   useFocusEffect(
     useCallback(() => {
-      Promise.all([loadWallet(), getItems(), getCheckoutCount(), getPendingOrder()]).then(([wallet, items, count, pending]) =>
-        setData(wallet ? { wallet, items, count, pending: pending ?? null } : null),
+      syncBackupIfDirty(); // retry an upload that failed while offline
+      Promise.all([loadWallet(), getItems(), getCheckoutCount(), getPendingOrder(), getAccess()]).then(
+        ([wallet, items, count, pending, access]) =>
+          setData(wallet ? { wallet, items, count, pending: pending ?? null, access: access ?? null } : null),
       );
     }, []),
   );
@@ -30,7 +33,8 @@ export default function Koleksi() {
   if (data === null) return <Redirect href="/mulai" />; // onboarding not done yet
   if (!data) return <Page>{null}</Page>;
 
-  const { wallet, items, count, pending } = data;
+  const { wallet, items, count, pending, access } = data;
+  const paidActive = !!access && new Date(access.endsAt).getTime() > Date.now();
   const saved = items.reduce((sum, i) => sum + i.price, 0);
   const freeLeft = Math.max(0, FREE_CHECKOUTS - count);
   const cardW = (Math.min(width, maxWidth) - 32 - GAP) / 2;
@@ -63,9 +67,11 @@ export default function Koleksi() {
 
       <PrimaryButton label="Checkout palsu baru" onPress={() => router.push('/barang')} />
       <Text style={styles.free}>
-        {freeLeft > 0
-          ? `Checkout gratis: ${freeLeft} dari ${FREE_CHECKOUTS} tersisa`
-          : 'Checkout gratis sudah habis'}
+        {paidActive && access
+          ? `Paket ${PLANS[access.plan].name} aktif sampai ${new Date(access.endsAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`
+          : freeLeft > 0
+            ? `Checkout gratis: ${freeLeft} dari ${FREE_CHECKOUTS} tersisa`
+            : 'Checkout gratis sudah habis'}
       </Text>
 
       <Text style={styles.section}>Koleksimu</Text>

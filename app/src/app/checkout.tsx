@@ -5,6 +5,7 @@ import { FakeQR } from '@/components/FakeQR';
 import { ItemPicture } from '@/components/ItemPicture';
 import { ScanAnimation } from '@/components/ScanAnimation';
 import { Page, PrimaryButton, SecondaryButton } from '@/components/ui';
+import { syncBackup } from '@/lib/backup';
 import { cart } from '@/lib/cart';
 import { completeCheckout, getAddress, saveAddress } from '@/lib/collection';
 import { rupiah } from '@/lib/format';
@@ -73,6 +74,7 @@ export default function Checkout() {
     setStage('processing');
     const [result] = await Promise.all([completeCheckout(item, method, useHutang), wait(1000)]);
     cart.item = null;
+    syncBackup(); // paid users: keep the online copy current (runs in the background)
     if (result.count === 1) track('first_fake_checkout_done', { price: item.price });
     track('fake_checkout_done', { count: result.count, price: item.price, method });
     if (result.item.hutang > 0) track('hutang_used', { amount: result.item.hutang });

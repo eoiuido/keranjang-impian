@@ -1,7 +1,8 @@
+import { getBackup, putBackup } from './backup';
 import { checkStatus, createCheckout, verifyNotification } from './doku';
 import { requestCode, verifyCode } from './login';
 import { isPlan, PLANS, type PlanId } from './plans';
-import { ago, type Env, iso, json, newSession, normalizeEmail, randomHex, sha256Hex } from './shared';
+import { ago, type Env, iso, json, newSession, normalizeEmail, randomHex, userFromToken } from './shared';
 
 type Order = {
   id: string;
@@ -194,16 +195,9 @@ async function dokuNotify(req: Request, env: Env): Promise<Response> {
 
 // GET /api/me (Authorization: Bearer <token>) → paid access of this phone.
 async function me(req: Request, env: Env): Promise<Response> {
-  const token = req.headers.get('Authorization')?.replace(/^Bearer /, '');
-  if (!token) return json({ error: 'unauthorized' }, 401);
-  const row = await env.DB.prepare(
-    `SELECT u.email, a.plan, a.ends_at FROM sessions s JOIN users u ON u.id = s.user_id
-     LEFT JOIN access a ON a.user_id = u.id WHERE s.token_hash = ?`,
-  )
-    .bind(await sha256Hex(token))
-    .first<{ email: string; plan: string | null; ends_at: string | null }>();
-  if (!row) return json({ error: 'unauthorized' }, 401);
-  return json({ email: row.email, plan: row.plan, endsAt: row.ends_at });
+  const user = await userFromToken(req, env);
+  if (!user) return json({ error: 'unauthorized' }, 401);
+  return json({ email: user.email, plan: user.plan, endsAt: user.endsAt });
 }
 
 // ---------- Router ----------
@@ -228,6 +222,8 @@ async function route(req: Request, env: Env): Promise<Response> {
   if (req.method === 'GET' && pathname === '/api/me') return me(req, env);
   if (req.method === 'POST' && pathname === '/api/login/code') return requestCode(req, env);
   if (req.method === 'POST' && pathname === '/api/login/verify') return verifyCode(req, env);
+  if (req.method === 'GET' && pathname === '/api/backup') return getBackup(req, env);
+  if (req.method === 'PUT' && pathname === '/api/backup') return putBackup(req, env);
   return json({ error: 'not_found' }, 404);
 }
 

@@ -47,3 +47,11 @@ export type LoginResult = { token: string; email: string; plan: 'weekly' | 'year
 
 export const verifyLoginCode = (email: string, code: string) =>
   request<LoginResult>('/api/login/verify', { method: 'POST', body: JSON.stringify({ email, code }) });
+
+const auth = (token: string) => ({ Authorization: `Bearer ${token}` });
+
+export const fetchBackup = <T>(token: string) =>
+  request<{ data: T | null; updatedAt: string | null }>('/api/backup', { headers: auth(token) });
+
+export const uploadBackup = (token: string, data: unknown) =>
+  request<{ ok: true; updatedAt: string }>('/api/backup', { method: 'PUT', headers: auth(token), body: JSON.stringify({ data }) });

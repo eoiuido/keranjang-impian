@@ -11,7 +11,7 @@ import { join } from 'node:path';
 const CLIENT_ID = 'MCH-LOCAL-TEST';
 const SECRET = 'local-test-secret-not-real';
 const MOCK_PORT = 8799;
-const API = 'http://localhost:8788';
+const API = 'http://localhost:8798';
 const WRANGLER = join('node_modules', 'wrangler', 'bin', 'wrangler.js');
 
 const sign = (h, target, body) => {
@@ -65,7 +65,7 @@ assert.equal(mig.status, 0, mig.stderr + mig.stdout);
 const worker = spawn(
   process.execPath,
   [
-    WRANGLER, 'dev', '--port', '8788', '--persist-to', dir, '--test-scheduled',
+    WRANGLER, 'dev', '--port', '8798', '--persist-to', dir, '--test-scheduled',
     '--var', `DOKU_BASE_URL:http://localhost:${MOCK_PORT}`,
     '--var', `DOKU_CLIENT_ID:${CLIENT_ID}`,
     '--var', `DOKU_SECRET_KEY:${SECRET}`,
@@ -191,6 +191,28 @@ try {
     assert.equal(ok.body.plan, 'yearly');
     assert.equal((await api('/api/me', { headers: { Authorization: `Bearer ${ok.body.token}` } })).body.email, email);
     assert.equal((await post('/api/login/verify', { email, code: sent.body.devCode })).body.error, 'expired', 'code works once');
+  });
+
+  await step('online backup: paid users only, photos and address never stored', async () => {
+    const order = (await api('/api/orders', { method: 'POST', body: JSON.stringify({ email: 'backup@example.com', plan: 'weekly' }) })).body;
+    await notify(order);
+    const token = (await api(`/api/orders/${order.orderId}`)).body.token;
+    const auth = { Authorization: `Bearer ${token}` };
+    const data = {
+      version: 1,
+      wallet: { balance: 150_000, debt: 0 },
+      items: [{ id: 'a1', name: 'Tumbler', price: 850_000, photo: 'data:image/jpeg;base64,AAAA' }],
+      address: 'Jl. Rahasia No. 1',
+    };
+    assert.equal((await api('/api/backup', { method: 'PUT', body: JSON.stringify({ data }) })).status, 401);
+    assert.equal((await api('/api/backup', { method: 'PUT', body: JSON.stringify({ data }), headers: auth })).status, 200);
+    const back = (await api('/api/backup', { headers: auth })).body;
+    assert.equal(back.data.wallet.balance, 150_000);
+    assert.equal(back.data.items[0].name, 'Tumbler');
+    assert.equal(back.data.items[0].photo, undefined, 'photo stripped');
+    assert.equal(back.data.address, undefined, 'address stripped');
+    const big = { items: ['x'.repeat(210_000)] };
+    assert.equal((await api('/api/backup', { method: 'PUT', body: JSON.stringify({ data: big }), headers: auth })).status, 413);
   });
 
   let offerOrder;

@@ -44,3 +44,17 @@ export async function newSession(env: Env, userId: number): Promise<string> {
     .run();
   return token;
 }
+
+export type SessionUser = { id: number; email: string; plan: string | null; endsAt: string | null };
+
+// The user behind "Authorization: Bearer <token>", or null.
+export async function userFromToken(req: Request, env: Env): Promise<SessionUser | null> {
+  const token = req.headers.get('Authorization')?.replace(/^Bearer /, '');
+  if (!token) return null;
+  return env.DB.prepare(
+    `SELECT u.id, u.email, a.plan, a.ends_at AS endsAt FROM sessions s JOIN users u ON u.id = s.user_id
+     LEFT JOIN access a ON a.user_id = u.id WHERE s.token_hash = ?`,
+  )
+    .bind(await sha256Hex(token))
+    .first<SessionUser>();
+}

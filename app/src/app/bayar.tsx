@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Linking, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Page, PrimaryButton, SecondaryButton } from '@/components/ui';
 import { ApiError, createOrder, getOrder, type OrderInfo } from '@/lib/api';
+import { restoreBackup, syncBackup } from '@/lib/backup';
 import { rupiah } from '@/lib/format';
 import { PLANS, type PlanId, saveAccess, setPendingOrder } from '@/lib/plan';
 import { getItem, setItem } from '@/lib/store';
@@ -127,6 +128,9 @@ function Confirm({ orderId }: { orderId: string }) {
           await saveAccess({ plan: o.plan, endsAt: o.endsAt, email: o.email }, o.token);
           await setPendingOrder(null);
           track('purchase', { plan: o.plan, price: o.amount });
+          // Same email paid before on another phone? Merge that backup, then save this phone's numbers.
+          if (o.token) await restoreBackup(o.token);
+          syncBackup();
           return;
         }
         if (o.status === 'expired' || o.status === 'review') {
