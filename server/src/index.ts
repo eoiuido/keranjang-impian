@@ -62,6 +62,7 @@ async function createOrder(req: Request, env: Env): Promise<Response> {
       amount,
       email,
       callbackUrl: `${env.APP_URL}/bayar?order=${id}`,
+      notifyUrl: `${env.APP_URL}${NOTIFY_PATH}`,
       minutes: PAY_MINUTES,
     }));
   } catch (e) {

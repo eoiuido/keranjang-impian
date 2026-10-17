@@ -127,6 +127,7 @@ try {
     const sent = mock.created.at(-1);
     assert.equal(sent.order.amount, 119_000);
     assert.equal(sent.customer.email, email);
+    assert.ok(String(sent.additional_info?.override_notification_url).endsWith('/api/doku/notify'));
     assert.deepEqual(sent.payment.payment_method_types, ['QRIS', 'EMONEY_OVO', 'EMONEY_DANA', 'EMONEY_SHOPEE_PAY', 'EMONEY_LINKAJA']);
     assert.equal(mock.badSignatures, 0, 'our signature to DOKU must be valid');
   });

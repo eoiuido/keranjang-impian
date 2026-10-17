@@ -83,12 +83,14 @@ export const METHODS = ['QRIS', 'EMONEY_OVO', 'EMONEY_DANA', 'EMONEY_SHOPEE_PAY'
 
 export async function createCheckout(
   env: DokuEnv,
-  o: { invoice: string; amount: number; email: string; callbackUrl: string; minutes: number },
+  o: { invoice: string; amount: number; email: string; callbackUrl: string; notifyUrl: string; minutes: number },
 ): Promise<{ url: string }> {
   const r = await call(env, 'POST', '/checkout/v1/payment', {
     order: { amount: o.amount, invoice_number: o.invoice, callback_url: o.callbackUrl },
     payment: { payment_due_date: o.minutes, payment_method_types: METHODS },
     customer: { email: o.email },
+    // Tell DOKU where to send the "paid" message for this order; no dashboard setting needed.
+    additional_info: { override_notification_url: o.notifyUrl },
   });
   const url = r.json?.response?.payment?.url;
   if (!r.ok || typeof url !== 'string') {
