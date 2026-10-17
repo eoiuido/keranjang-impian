@@ -4,6 +4,9 @@ name = "keranjang-impian"
 main = "src/index.ts"
 compatibility_date = "2026-10-01"
 
+# Online address of this app (EOI domain, one subdomain per app).
+routes = [{ pattern = "keranjang.eoi-apps.my.id", custom_domain = true }]
+
 # The exported web app (built from ../app with `npx expo export --platform web`).
 [assets]
 directory = "../app/dist"
@@ -13,7 +16,7 @@ run_worker_first = ["/api/*"]
 [[d1_databases]]
 binding = "DB"
 database_name = "keranjang-impian"
-database_id = "local-only-until-created" # replaced by the real id after `wrangler d1 create`
+database_id = "7f833401-1f57-44cc-8aa8-e598670d5b5a"
 migrations_dir = "migrations"
 
 # Safety net: ask DOKU about pending orders every 5 minutes.
@@ -22,8 +25,8 @@ crons = ["*/5 * * * *"]
 
 [vars]
 DOKU_BASE_URL = "https://api-sandbox.doku.com" # production: https://api.doku.com
-APP_URL = "http://localhost:8090" # where DOKU sends the buyer back after paying
-ALLOWED_ORIGIN = "http://localhost:8090" # dev only: the Expo dev server
+APP_URL = "https://keranjang.eoi-apps.my.id" # where DOKU sends the buyer back after paying
+# Local development overrides APP_URL and adds ALLOWED_ORIGIN in .dev.vars.
 
 # Secrets (never in this file): DOKU_CLIENT_ID, DOKU_SECRET_KEY.
 # Local: put them in .dev.vars. Online: `npx wrangler secret put DOKU_SECRET_KEY`.

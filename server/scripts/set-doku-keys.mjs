@@ -1,7 +1,7 @@
 // Saves the DOKU sandbox keys into server/.dev.vars (a private file that is never
 // uploaded to GitHub). The Secret Key is typed hidden, so it never appears on screen.
 // Run: npm run set-keys
-import { writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -48,8 +48,20 @@ if (!clientId || !secretKey) {
   console.log('\nKosong. Tidak ada yang disimpan.');
   process.exit(1);
 }
+// Keep any other local settings already in the file (e.g. APP_URL).
+const others = existsSync(file)
+  ? readFileSync(file, 'utf8')
+      .split(/\r?\n/)
+      .filter((l) => l && !l.startsWith('#') && !/^DOKU_(CLIENT_ID|SECRET_KEY)=/.test(l))
+  : [];
 writeFileSync(
   file,
-  `# DOKU sandbox keys. Private: never commit or share this file.\nDOKU_CLIENT_ID=${clientId}\nDOKU_SECRET_KEY=${secretKey}\n`,
+  [
+    '# Local settings + DOKU sandbox keys. Private: never commit or share this file.',
+    `DOKU_CLIENT_ID=${clientId}`,
+    `DOKU_SECRET_KEY=${secretKey}`,
+    ...others,
+    '',
+  ].join('\n'),
 );
 console.log(`\nTersimpan. Secret Key: ${secretKey.length} karakter (tidak ditampilkan).`);
