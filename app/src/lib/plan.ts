@@ -14,10 +14,15 @@ export const PLANS = {
 // Price for one week of the yearly plan, e.g. Rp119.000 / 52 = Rp2.288.
 export const perWeek = (yearly: number) => Math.round(yearly / 52);
 
-// Paid access on this phone. Only our server sets it, after DOKU confirms payment.
+// Paid access on this phone. Only our server grants it, after DOKU confirms payment.
 export type Access = { plan: PlanId; endsAt: string; email: string };
 
 export const getAccess = () => getItem<Access>('access');
+
+export async function saveAccess(access: Access, token?: string): Promise<void> {
+  await setItem('access', access);
+  if (token) await setItem('session', token);
+}
 
 export async function isPaid(): Promise<boolean> {
   const a = await getAccess();
@@ -33,3 +38,8 @@ export async function needsPaywall(): Promise<boolean> {
 // The decline offer is shown once per phone, ever.
 export const declineOfferSeen = async () => (await getItem<boolean>('declineOfferSeen')) === true;
 export const markDeclineOfferSeen = () => setItem('declineOfferSeen', true);
+
+// A real payment that was started on this phone but not confirmed yet.
+export type PendingOrder = { id: string; plan: PlanId; amount: number };
+export const getPendingOrder = () => getItem<PendingOrder | null>('pendingOrder');
+export const setPendingOrder = (o: PendingOrder | null) => setItem('pendingOrder', o);

@@ -1,15 +1,15 @@
 import { Redirect, router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { ItemPicture } from '@/components/ItemPicture';
 import { Page, PrimaryButton } from '@/components/ui';
 import { getCheckoutCount, getItems, type SavedItem } from '@/lib/collection';
 import { rupiah } from '@/lib/format';
-import { FREE_CHECKOUTS } from '@/lib/plan';
+import { FREE_CHECKOUTS, getPendingOrder, type PendingOrder } from '@/lib/plan';
 import { loadWallet, type Wallet } from '@/lib/profile';
 import { colors, maxWidth, radius } from '@/theme';
 
-type Data = { wallet: Wallet; items: SavedItem[]; count: number };
+type Data = { wallet: Wallet; items: SavedItem[]; count: number; pending: PendingOrder | null };
 
 const GAP = 12;
 
@@ -21,8 +21,8 @@ export default function Koleksi() {
   // Reload every time this screen is shown (e.g. after another checkout).
   useFocusEffect(
     useCallback(() => {
-      Promise.all([loadWallet(), getItems(), getCheckoutCount()]).then(([wallet, items, count]) =>
-        setData(wallet ? { wallet, items, count } : null),
+      Promise.all([loadWallet(), getItems(), getCheckoutCount(), getPendingOrder()]).then(([wallet, items, count, pending]) =>
+        setData(wallet ? { wallet, items, count, pending: pending ?? null } : null),
       );
     }, []),
   );
@@ -30,7 +30,7 @@ export default function Koleksi() {
   if (data === null) return <Redirect href="/mulai" />; // onboarding not done yet
   if (!data) return <Page>{null}</Page>;
 
-  const { wallet, items, count } = data;
+  const { wallet, items, count, pending } = data;
   const saved = items.reduce((sum, i) => sum + i.price, 0);
   const freeLeft = Math.max(0, FREE_CHECKOUTS - count);
   const cardW = (Math.min(width, maxWidth) - 32 - GAP) / 2;
@@ -38,6 +38,17 @@ export default function Koleksi() {
   return (
     <Page>
       <Text style={styles.brand}>Keranjang Impian</Text>
+
+      {pending && (
+        <Pressable
+          style={styles.pending}
+          accessibilityRole="button"
+          onPress={() => router.push({ pathname: '/bayar', params: { order: pending.id } })}
+        >
+          <Text style={styles.pendingText}>Ada pembayaran {rupiah(pending.amount)} yang belum selesai.</Text>
+          <Text style={styles.pendingLink}>Cek status ›</Text>
+        </Pressable>
+      )}
 
       <View style={styles.savedCard}>
         <Text style={styles.savedLabel}>Total uang yang kamu selamatkan</Text>
@@ -93,6 +104,9 @@ function Stat({ label, value, color }: { label: string; value: string; color: st
 }
 
 const styles = StyleSheet.create({
+  pending: { marginTop: 12, backgroundColor: '#1F3A5F', borderRadius: radius.md, padding: 14 },
+  pendingText: { fontSize: 14, color: '#FFFFFF' },
+  pendingLink: { marginTop: 4, fontSize: 15, fontWeight: '700', color: '#FFFFFF' },
   brand: { fontSize: 16, fontWeight: '700', color: colors.pinkDeep, textAlign: 'center' },
   savedCard: {
     marginTop: 16,

@@ -3,9 +3,9 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { colors, maxWidth, radius } from '@/theme';
 
 // A phone-width column that scrolls; used by every screen.
-export function Page({ children }: { children: ReactNode }) {
+export function Page({ children, bg }: { children: ReactNode; bg?: string }) {
   return (
-    <ScrollView contentContainerStyle={styles.page} keyboardShouldPersistTaps="handled">
+    <ScrollView contentContainerStyle={[styles.page, bg ? { backgroundColor: bg } : null]} keyboardShouldPersistTaps="handled">
       <View style={styles.column}>{children}</View>
     </ScrollView>
   );
