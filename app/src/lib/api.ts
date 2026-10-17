@@ -15,7 +15,10 @@ export type OrderInfo = {
 };
 
 export class ApiError extends Error {
-  constructor(public code: string) {
+  constructor(
+    public code: string,
+    public data: Record<string, unknown> = {},
+  ) {
     super(code);
   }
 }
@@ -28,7 +31,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError('offline');
   }
   const body = await res.json().catch(() => null);
-  if (!res.ok) throw new ApiError(body?.error ?? 'server_error');
+  if (!res.ok) throw new ApiError(body?.error ?? 'server_error', body ?? {});
   return body as T;
 }
 
@@ -36,3 +39,11 @@ export const createOrder = (email: string, plan: 'weekly' | 'yearly', offer: boo
   request<OrderInfo>('/api/orders', { method: 'POST', body: JSON.stringify({ email, plan, offer }) });
 
 export const getOrder = (id: string) => request<OrderInfo>(`/api/orders/${encodeURIComponent(id)}`);
+
+export const requestLoginCode = (email: string) =>
+  request<{ ok: true }>('/api/login/code', { method: 'POST', body: JSON.stringify({ email }) });
+
+export type LoginResult = { token: string; email: string; plan: 'weekly' | 'yearly' | null; endsAt: string | null };
+
+export const verifyLoginCode = (email: string, code: string) =>
+  request<LoginResult>('/api/login/verify', { method: 'POST', body: JSON.stringify({ email, code }) });

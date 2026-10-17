@@ -1,11 +1,7 @@
-import { checkStatus, createCheckout, type DokuEnv, verifyNotification } from './doku';
+import { checkStatus, createCheckout, verifyNotification } from './doku';
+import { requestCode, verifyCode } from './login';
 import { isPlan, PLANS, type PlanId } from './plans';
-
-export interface Env extends DokuEnv {
-  DB: D1Database;
-  APP_URL: string;
-  ALLOWED_ORIGIN?: string;
-}
+import { ago, type Env, iso, json, newSession, normalizeEmail, randomHex, sha256Hex } from './shared';
 
 type Order = {
   id: string;
@@ -23,27 +19,6 @@ type Order = {
 
 const PAY_MINUTES = 30; // how long DOKU's payment page stays valid
 const NOTIFY_PATH = '/api/doku/notify';
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-const iso = (d = new Date()) => d.toISOString();
-const ago = (t: string) => Date.now() - new Date(t).getTime();
-
-function json(data: unknown, status = 200): Response {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-  });
-}
-
-function randomHex(bytes: number): string {
-  const b = crypto.getRandomValues(new Uint8Array(bytes));
-  return Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
-}
-
-async function sha256Hex(s: string): Promise<string> {
-  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(d), (x) => x.toString(16).padStart(2, '0')).join('');
-}
 
 const getOrder = (env: Env, id: string) => env.DB.prepare('SELECT * FROM orders WHERE id = ?').bind(id).first<Order>();
 
@@ -52,8 +27,8 @@ const getOrder = (env: Env, id: string) => env.DB.prepare('SELECT * FROM orders 
 // POST /api/orders {email, plan, offer} → a DOKU payment page for this order.
 async function createOrder(req: Request, env: Env): Promise<Response> {
   const body = (await req.json().catch(() => null)) as { email?: unknown; plan?: unknown; offer?: unknown } | null;
-  const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
-  if (!EMAIL_RE.test(email) || email.length > 254) return json({ error: 'invalid_email' }, 400);
+  const email = normalizeEmail(body?.email);
+  if (!email) return json({ error: 'invalid_email' }, 400);
   if (!isPlan(body?.plan)) return json({ error: 'invalid_plan' }, 400);
   const plan = body.plan;
 
@@ -135,10 +110,7 @@ async function orderStatus(env: Env, id: string): Promise<Response> {
   // Hand out a token only shortly after payment; later, log in with the email code.
   let token: string | undefined;
   if (access && order.paid_at && ago(order.paid_at) < 24 * 3_600_000) {
-    token = randomHex(32);
-    await env.DB.prepare('INSERT INTO sessions (token_hash, user_id, created_at) VALUES (?, ?, ?)')
-      .bind(await sha256Hex(token), access.user_id, iso())
-      .run();
+    token = await newSession(env, access.user_id);
   }
   return json({ ...publicOrder(order), email: order.email, endsAt: access?.ends_at, token });
 }
@@ -254,6 +226,8 @@ async function route(req: Request, env: Env): Promise<Response> {
   if (req.method === 'GET' && m) return orderStatus(env, m[1]);
   if (req.method === 'POST' && pathname === NOTIFY_PATH) return dokuNotify(req, env);
   if (req.method === 'GET' && pathname === '/api/me') return me(req, env);
+  if (req.method === 'POST' && pathname === '/api/login/code') return requestCode(req, env);
+  if (req.method === 'POST' && pathname === '/api/login/verify') return verifyCode(req, env);
   return json({ error: 'not_found' }, 404);
 }
 

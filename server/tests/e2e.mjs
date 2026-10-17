@@ -69,6 +69,7 @@ const worker = spawn(
     '--var', `DOKU_BASE_URL:http://localhost:${MOCK_PORT}`,
     '--var', `DOKU_CLIENT_ID:${CLIENT_ID}`,
     '--var', `DOKU_SECRET_KEY:${SECRET}`,
+    '--var', 'DEV_RETURN_CODE:1',
   ],
   { env: { ...process.env, CI: '1' }, stdio: ['ignore', 'pipe', 'pipe'] },
 );
@@ -168,6 +169,28 @@ try {
     assert.equal(me.body.email, email);
     assert.equal(me.body.plan, 'yearly');
     assert.equal((await api('/api/me', { headers: { Authorization: 'Bearer nope' } })).status, 401);
+  });
+
+  await step('email login code: wrong code counts, right code logs in once', async () => {
+    const post = (path, body) => api(path, { method: 'POST', body: JSON.stringify(body) });
+    const unknown = await post('/api/login/code', { email: 'belum.bayar@example.com' });
+    assert.equal(unknown.status, 200);
+    assert.equal(unknown.body.devCode, undefined, 'no code for emails that never paid');
+
+    const sent = await post('/api/login/code', { email: ' PEMBELI.test@example.com ' });
+    assert.match(String(sent.body.devCode), /^\d{6}$/, JSON.stringify(sent.body));
+    assert.equal((await post('/api/login/code', { email })).status, 429, 'one code per minute');
+
+    const wrong = String((Number(sent.body.devCode) + 1) % 1_000_000).padStart(6, '0');
+    const bad = await post('/api/login/verify', { email, code: wrong });
+    assert.equal(bad.body.error, 'wrong_code');
+    assert.equal(bad.body.attemptsLeft, 4);
+
+    const ok = await post('/api/login/verify', { email, code: sent.body.devCode });
+    assert.match(ok.body.token, /^[0-9a-f]{64}$/);
+    assert.equal(ok.body.plan, 'yearly');
+    assert.equal((await api('/api/me', { headers: { Authorization: `Bearer ${ok.body.token}` } })).body.email, email);
+    assert.equal((await post('/api/login/verify', { email, code: sent.body.devCode })).body.error, 'expired', 'code works once');
   });
 
   let offerOrder;
