@@ -16,6 +16,11 @@ export default function Root({ children }: PropsWithChildren) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <meta name="theme-color" content="#FFFFFF" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta property="og:title" content="Spirit Belongings: Checkout palsu. Dompet aman." />
+        <meta property="og:description" content="Beli barang impianmu tanpa keluar uang beneran." />
+        <meta property="og:image" content="https://spirit-belongings.eoi-apps.my.id/icon-512.png" />
         <meta
           name="description"
           content="Checkout palsu. Dompet aman. Beli barang impianmu tanpa keluar uang beneran."

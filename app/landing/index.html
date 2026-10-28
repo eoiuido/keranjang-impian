@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spirit Belongings: Checkout palsu. Dompet aman.</title>
+<meta name="description" content="Checkout palsu. Dompet aman. Beli barang impianmu tanpa keluar uang beneran.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<meta property="og:title" content="Spirit Belongings: Checkout palsu. Dompet aman.">
+<meta property="og:description" content="Beli barang impianmu tanpa keluar uang beneran.">
+<meta property="og:image" content="https://spirit-belongings.eoi-apps.my.id/icon-512.png">
+<meta property="og:url" content="https://spirit-belongings.eoi-apps.my.id/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Font loads without blocking the first paint; the system font shows until it arrives. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"></noscript>
+<!--PREFETCH-->
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#FFFFFF}
+  body{font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#111114;-webkit-font-smoothing:antialiased}
+  main{max-width:440px;min-height:100vh;min-height:100dvh;margin:0 auto;padding:16px 20px 28px;display:flex;flex-direction:column}
+  .brand{font-size:12px;font-weight:600;letter-spacing:1.6px}
+  .hero{position:relative;margin-top:20px;height:260px;border-radius:20px;background:#F5F5F7;display:flex;align-items:center;justify-content:center}
+  .chip{position:absolute;left:16px;bottom:16px;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #E7E7EB;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700}
+  h1{margin-top:28px;font-size:34px;line-height:38px;font-weight:800;letter-spacing:-.6px}
+  .sub{margin-top:10px;font-size:16px;line-height:24px;color:#6B6B73}
+  .cta{margin-top:28px;display:flex;flex-direction:column;gap:10px}
+  .btn{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:14px;background:#D6336C;color:#fff;font-size:16px;font-weight:700;text-decoration:none}
+  .btn:active{opacity:.88}
+  .note{font-size:13px;line-height:18px;color:#6B6B73;text-align:center}
+  footer{margin-top:auto;padding-top:36px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+  footer a.login{font-size:14px;font-weight:600;color:#111114}
+  footer p{font-size:12px;line-height:18px;color:#A1A1AA}
+  footer p a{color:inherit}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand">SPIRIT BELONGINGS</div>
+  <div class="hero" aria-hidden="true">
+    <svg width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="#A1A1AA" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5h10l-1 2.5H8z"/><path d="M8 7.5l1.1 12.2a1.6 1.6 0 0 0 1.6 1.3h2.6a1.6 1.6 0 0 0 1.6-1.3L16 7.5"/><path d="M13 5l1.6-3"/><path d="M15.7 10.5h1.2a2 2 0 0 1 2 2v2.2a2 2 0 0 1-2 2h-1.6"/></svg>
+    <div class="chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D6336C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.2 12.3l2.6 2.6 5-5.2"/></svg>Rp850.000 diselamatkan</div>
+  </div>
+  <h1>Checkout palsu.<br>Dompet aman.</h1>
+  <p class="sub">Beli barang impianmu tanpa keluar uang beneran, dan lihat tabunganmu bertambah.</p>
+  <div class="cta">
+    <a id="start" class="btn" href="/mulai">Coba checkout palsu</a>
+    <p class="note">Gratis 3 kali · Tanpa daftar</p>
+  </div>
+  <footer>
+    <a class="login" href="/masuk">Sudah bayar? Masuk</a>
+    <p>Spirit Belongings by EOI · <a href="/privasi">Privasi</a> · <a href="/ketentuan">Ketentuan</a> · <a href="/refund">Refund</a></p>
+  </footer>
+</main>
+<script>
+// Returning visitor on this phone: send the button to where they left off.
+// Same storage as the app (IndexedDB "keranjang-impian", store "kv").
+(function () {
+  try {
+    var req = indexedDB.open('keranjang-impian', 1);
+    req.onupgradeneeded = function () { req.result.createObjectStore('kv'); };
+    req.onsuccess = function () {
+      var db = req.result;
+      try {
+        var s = db.transaction('kv', 'readonly').objectStore('kv');
+        var count = s.get('checkoutsUsed'), profile = s.get('profile');
+        profile.onsuccess = function () {
+          var a = document.getElementById('start');
+          if (count.result > 0) a.href = '/koleksi';
+          else if (profile.result) a.href = '/barang';
+          db.close();
+        };
+      } catch (e) { db.close(); }
+    };
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

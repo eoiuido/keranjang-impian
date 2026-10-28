@@ -29,7 +29,14 @@
       "backgroundColor": "#FFFFFF"
     },
     "plugins": [
-      "expo-router"
+      [
+        "expo-router",
+        {
+          "asyncRoutes": {
+            "web": true
+          }
+        }
+      ]
     ],
     "scheme": "keranjangimpian"
   }
