@@ -43,3 +43,9 @@ export async function completeOnboarding(money: number, expenses: number): Promi
     await setItem<Wallet>('wallet', { balance: money - expenses, debt: 0, lastMonth: month });
   }
 }
+
+// Settings: new monthly money/expenses apply from the next month change (this month's balance stays).
+export async function updateProfile(money: number, expenses: number): Promise<void> {
+  const p = await getProfile();
+  await setItem<Profile>('profile', { money, expenses, startMonth: p?.startMonth ?? monthKey() });
+}

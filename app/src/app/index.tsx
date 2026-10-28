@@ -46,7 +46,20 @@ export default function Landing() {
         <Link href="/masuk" style={styles.footerLink}>
           Sudah bayar? Masuk
         </Link>
-        <Text style={styles.footerSmall}>Spirit Belongings by EOI · Privasi · Ketentuan · eoi.uido@gmail.com</Text>
+        <Text style={styles.footerSmall}>
+          Spirit Belongings by EOI ·{' '}
+          <Text style={styles.footerSmallLink} onPress={() => router.push('/privasi')}>
+            Privasi
+          </Text>
+          {' · '}
+          <Text style={styles.footerSmallLink} onPress={() => router.push('/ketentuan')}>
+            Ketentuan
+          </Text>
+          {' · '}
+          <Text style={styles.footerSmallLink} onPress={() => router.push('/refund')}>
+            Refund
+          </Text>
+        </Text>
       </View>
     </Page>
   );
@@ -82,5 +95,6 @@ const styles = StyleSheet.create({
   note: { ...type.small, color: colors.textSoft, textAlign: 'center' },
   footer: { marginTop: 'auto', paddingTop: 36, alignItems: 'center', gap: 8 },
   footerLink: { fontSize: 14, fontWeight: '600', color: colors.text, textDecorationLine: 'underline' },
+  footerSmallLink: { textDecorationLine: 'underline' },
   footerSmall: { ...type.small, fontSize: 12, color: colors.textFaint, textAlign: 'center' },
 });

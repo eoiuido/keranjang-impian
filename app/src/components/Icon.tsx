@@ -150,6 +150,13 @@ const ICONS = {
     </>
   ),
   arrowRight: <Path d="M5 12h14M13 6l6 6-6 6" />,
+  doc: (
+    <>
+      <Path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
+      <Path d="M14 3v4h4M9 12h6M9 16h6" />
+    </>
+  ),
+  sparkle: <Path d="M12 3l1.9 5.4L19.5 10l-5.6 1.6L12 17l-1.9-5.4L4.5 10l5.6-1.6z" />,
   settings: (
     <>
       <Path d="M4 7h9M17 7h3M4 17h3M11 17h9" />

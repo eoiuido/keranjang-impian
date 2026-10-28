@@ -1,3 +1,4 @@
+import { deleteAccount, logout } from './account';
 import { getBackup, putBackup } from './backup';
 import { checkStatus, createCheckout, verifyNotification } from './doku';
 import { requestCode, verifyCode } from './login';
@@ -225,6 +226,8 @@ async function route(req: Request, env: Env): Promise<Response> {
   if (req.method === 'POST' && pathname === '/api/login/verify') return verifyCode(req, env);
   if (req.method === 'GET' && pathname === '/api/backup') return getBackup(req, env);
   if (req.method === 'PUT' && pathname === '/api/backup') return putBackup(req, env);
+  if (req.method === 'POST' && pathname === '/api/logout') return logout(req, env);
+  if (req.method === 'DELETE' && pathname === '/api/account') return deleteAccount(req, env);
   return json({ error: 'not_found' }, 404);
 }
 

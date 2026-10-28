@@ -44,7 +44,12 @@ export default function Koleksi() {
 
   return (
     <Page>
-      <Brand />
+      <View style={styles.top}>
+        <Brand />
+        <Pressable onPress={() => router.push('/pengaturan')} accessibilityRole="button" accessibilityLabel="Pengaturan" hitSlop={12}>
+          <Icon name="settings" size={22} />
+        </Pressable>
+      </View>
 
       {pending && (
         <Pressable
@@ -106,6 +111,7 @@ export default function Koleksi() {
 }
 
 const styles = StyleSheet.create({
+  top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   pending: {
     marginTop: 16,
     backgroundColor: colors.ink,

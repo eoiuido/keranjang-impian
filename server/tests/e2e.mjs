@@ -216,6 +216,25 @@ try {
     assert.equal((await api('/api/backup', { method: 'PUT', body: JSON.stringify({ data: big }), headers: auth })).status, 413);
   });
 
+  await step('log out ends this phone only; delete account removes everything', async () => {
+    const order = (await api('/api/orders', { method: 'POST', body: JSON.stringify({ email: 'hapus@example.com', plan: 'weekly' }) })).body;
+    await notify(order);
+    const t1 = (await api(`/api/orders/${order.orderId}`)).body.token;
+    const t2 = (await api(`/api/orders/${order.orderId}`)).body.token; // a second phone
+    const h = (t) => ({ Authorization: `Bearer ${t}` });
+    await api('/api/backup', { method: 'PUT', body: JSON.stringify({ data: { version: 1, items: [] } }), headers: h(t1) });
+
+    assert.equal((await api('/api/logout', { method: 'POST', headers: h(t1) })).status, 200);
+    assert.equal((await api('/api/me', { headers: h(t1) })).status, 401, 'logged out');
+    assert.equal((await api('/api/me', { headers: h(t2) })).status, 200, 'other phone still logged in');
+
+    assert.equal((await api('/api/account', { method: 'DELETE', headers: h(t2) })).status, 200);
+    assert.equal((await api('/api/me', { headers: h(t2) })).status, 401, 'no session left');
+    const code = await api('/api/login/code', { method: 'POST', body: JSON.stringify({ email: 'hapus@example.com' }) });
+    assert.equal(code.body.devCode, undefined, 'account is gone, so no login code');
+    assert.equal((await api('/api/account', { method: 'DELETE' })).status, 401, 'needs login');
+  });
+
   let offerOrder;
   await step('decline offer gives Rp99.000', async () => {
     offerOrder = (await api('/api/orders', { method: 'POST', body: JSON.stringify({ email, plan: 'yearly', offer: true }) })).body;

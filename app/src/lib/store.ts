@@ -51,3 +51,20 @@ export async function setItem<T>(key: string, value: T): Promise<void> {
     }
   });
 }
+
+// "Hapus semua data": remove everything this app saved on the phone.
+export async function clearAll(): Promise<void> {
+  memory.clear();
+  const db = await openDb();
+  db?.close();
+  dbPromise = null;
+  if (typeof indexedDB === 'undefined') return;
+  await new Promise<void>((resolve) => {
+    try {
+      const req = indexedDB.deleteDatabase(DB);
+      req.onsuccess = req.onerror = req.onblocked = () => resolve();
+    } catch {
+      resolve();
+    }
+  });
+}

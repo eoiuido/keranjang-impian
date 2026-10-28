@@ -55,3 +55,8 @@ export const fetchBackup = <T>(token: string) =>
 
 export const uploadBackup = (token: string, data: unknown) =>
   request<{ ok: true; updatedAt: string }>('/api/backup', { method: 'PUT', headers: auth(token), body: JSON.stringify({ data }) });
+
+export const logoutApi = (token: string) => request<{ ok: true }>('/api/logout', { method: 'POST', headers: auth(token) });
+
+export const deleteAccountApi = (token: string) =>
+  request<{ ok: true }>('/api/account', { method: 'DELETE', headers: auth(token) });

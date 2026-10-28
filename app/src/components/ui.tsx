@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, type TextStyle, View, type ViewStyle } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, type StyleProp, StyleSheet, Text, type TextStyle, View, type ViewStyle } from 'react-native';
 import { colors, maxWidth, radius, type } from '@/theme';
 import { Icon, type IconName } from './Icon';
 
@@ -108,7 +108,7 @@ export function Notice({ tone = 'info', icon, children }: { tone?: 'info' | 'war
   );
 }
 
-export function Label({ children, style }: { children: ReactNode; style?: TextStyle }) {
+export function Label({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) {
   return <Text style={[styles.label, style]}>{children}</Text>;
 }
 
