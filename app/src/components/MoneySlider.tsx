@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { type GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 import { rupiah } from '@/lib/format';
-import { colors, type } from '@/theme';
+import { colors, shape, type } from '@/theme';
 import { Display } from './ui';
 import { Icon } from './Icon';
 
@@ -105,20 +105,19 @@ const styles = StyleSheet.create({
     height: THUMB,
     marginLeft: -THUMB / 2,
     borderRadius: THUMB / 2,
-    backgroundColor: colors.white,
-    borderWidth: 1,
+    backgroundColor: colors.card,
+    borderWidth: shape.border,
     borderColor: colors.line,
-    shadowColor: '#000',
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    boxShadow: '0 2px 6px rgba(0,0,0,.15)',
   },
   round: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    borderWidth: 1,
+    borderWidth: shape.border,
     borderColor: colors.line,
+    backgroundColor: colors.card,
+    boxShadow: shape.shadowSm,
     alignItems: 'center',
     justifyContent: 'center',
   },

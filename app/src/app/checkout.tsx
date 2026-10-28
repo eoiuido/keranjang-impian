@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
   methodIcon: { width: 40, height: 40, borderRadius: radius.sm, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   methodName: { fontSize: 15, fontWeight: '700', color: colors.text },
   methodNote: { ...type.small, color: colors.textSoft },
-  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   radioOn: { borderColor: colors.accent },
   radioDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.accent },
   qrisWrap: { alignItems: 'center', paddingTop: 8 },

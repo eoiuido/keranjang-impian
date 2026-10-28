@@ -32,6 +32,9 @@ type Tokens = {
   rLg: string; // cards
   border: string; // border width of cards, inputs, buttons
   shadow: string; // cards and buttons
+  shadowSm: string; // tabs, chips, small cards
+  pictureBg: string; // background behind item icons/photos
+  pictureIcon: string;
   btnCase: string; // text-transform of button labels
   btnSpacing: string; // letter-spacing of button labels
 };
@@ -65,6 +68,9 @@ const NETRAL: Tokens = {
   rLg: '20px',
   border: '1px',
   shadow: 'none',
+  shadowSm: '0 1px 4px rgba(0,0,0,.08)',
+  pictureBg: 'none',
+  pictureIcon: '#A1A1AA',
   btnCase: 'none',
   btnSpacing: '0px',
 };
@@ -98,6 +104,9 @@ export const SKINS: Record<SkinName | 'netral', Tokens> = {
     rLg: '6px',
     border: '1px',
     shadow: 'none',
+    shadowSm: '0 1px 3px rgba(42,15,34,.10)',
+    pictureBg: 'linear-gradient(160deg, #F3E9DE, #E2CFBA)',
+    pictureIcon: '#8C6A3B',
     btnCase: 'uppercase',
     btnSpacing: '2.5px',
   },
@@ -128,6 +137,9 @@ export const SKINS: Record<SkinName | 'netral', Tokens> = {
     rLg: '22px',
     border: '2.5px',
     shadow: '4px 4px 0 #111111',
+    shadowSm: '2px 2px 0 #111111',
+    pictureBg: 'linear-gradient(120deg, #FFB3E1, #C9B6FF 50%, #A8F0FF)',
+    pictureIcon: '#111111',
     btnCase: 'none',
     btnSpacing: '0px',
   },
@@ -174,6 +186,9 @@ export const radius = { sm: css('rSm'), md: css('rMd'), lg: css('rLg'), pill: 99
 export const shape = {
   border: css('border'),
   shadow: v('shadow'),
+  shadowSm: v('shadowSm'),
+  pictureBg: v('pictureBg'),
+  pictureIcon: v('pictureIcon'),
   btnCase: v('btnCase') as 'none',
   btnSpacing: css('btnSpacing'),
 };

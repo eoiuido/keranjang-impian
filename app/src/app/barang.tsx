@@ -11,7 +11,7 @@ import { pickPhoto } from '@/lib/photo';
 import { needsPaywall } from '@/lib/plan';
 import { loadWallet } from '@/lib/profile';
 import { track } from '@/lib/track';
-import { colors, radius, type } from '@/theme';
+import { colors, radius, shape, type } from '@/theme';
 
 const idr = new Intl.NumberFormat('id-ID');
 
@@ -102,8 +102,8 @@ export default function Barang() {
                       accessibilityState={{ checked: on }}
                       style={[styles.chip, on && styles.chipOn]}
                     >
-                      <Icon name={c.icon} size={16} color={on ? colors.white : colors.text} strokeWidth={1.8} />
-                      <Text style={[styles.chipText, on && { color: colors.white }]}>{c.label}</Text>
+                      <Icon name={c.icon} size={16} color={on ? colors.onAccent : colors.text} strokeWidth={1.8} />
+                      <Text style={[styles.chipText, on && { color: colors.onAccent }]}>{c.label}</Text>
                     </Pressable>
                   );
                 })}
@@ -162,8 +162,8 @@ export default function Barang() {
 
 const styles = StyleSheet.create({
   tabs: { flexDirection: 'row', backgroundColor: colors.surface, borderRadius: radius.md, padding: 4, marginBottom: 20 },
-  tab: { flex: 1, paddingVertical: 10, borderRadius: radius.sm, alignItems: 'center' },
-  tabOn: { backgroundColor: colors.white, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } },
+  tab: { flex: 1, paddingVertical: 10, borderRadius: radius.md, alignItems: 'center', borderWidth: shape.border, borderColor: 'transparent' },
+  tabOn: { backgroundColor: colors.card, borderColor: colors.line, boxShadow: shape.shadowSm },
   tabText: { fontSize: 14, fontWeight: '600', color: colors.textSoft },
   tabTextOn: { color: colors.text },
   sample: { alignItems: 'center' },
@@ -176,8 +176,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    borderWidth: 1,
+    borderWidth: shape.border,
     borderColor: colors.line,
+    backgroundColor: colors.card,
     borderRadius: radius.pill,
     paddingHorizontal: 14,
     paddingVertical: 8,
@@ -189,19 +190,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    borderWidth: 1,
+    borderWidth: shape.border,
     borderColor: colors.line,
+    backgroundColor: colors.card,
     borderRadius: radius.pill,
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
-  chipOn: { backgroundColor: colors.text, borderColor: colors.text },
+  chipOn: { backgroundColor: colors.accent, borderColor: colors.line, boxShadow: shape.shadowSm },
   chipText: { fontSize: 13, fontWeight: '600', color: colors.text },
   priceField: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: shape.border,
     borderColor: colors.line,
+    backgroundColor: colors.card,
     borderRadius: radius.sm,
     paddingHorizontal: 14,
   },

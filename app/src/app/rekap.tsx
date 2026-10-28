@@ -8,7 +8,7 @@ import { isPaid } from '@/lib/plan';
 import { monthLabel, monthSummary, previousMonth, type Recap } from '@/lib/recap';
 import { recapImage, shareOrSave } from '@/lib/recapCard';
 import { track } from '@/lib/track';
-import { colors, radius, type } from '@/theme';
+import { colors, radius, shape, type } from '@/theme';
 
 // S15. Monthly recap (paid): a card to save or share. Never shows income or address.
 export default function Rekap() {
@@ -112,8 +112,8 @@ const styles = StyleSheet.create({
   title: { ...type.title, color: colors.text },
   sub: { ...type.body, marginTop: 8, color: colors.textSoft },
   tabs: { flexDirection: 'row', backgroundColor: colors.surface, borderRadius: radius.md, padding: 4, marginBottom: 16 },
-  tab: { flex: 1, paddingVertical: 10, borderRadius: radius.sm, alignItems: 'center' },
-  tabOn: { backgroundColor: colors.white, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 4, shadowOffset: { width: 0, height: 1 } },
+  tab: { flex: 1, paddingVertical: 10, borderRadius: radius.md, alignItems: 'center', borderWidth: shape.border, borderColor: 'transparent' },
+  tabOn: { backgroundColor: colors.card, borderColor: colors.line, boxShadow: shape.shadowSm },
   tabText: { fontSize: 14, fontWeight: '600', color: colors.textSoft },
   tabTextOn: { color: colors.text },
   card: { padding: 24 },

@@ -1,7 +1,7 @@
 import { Image, StyleSheet, View } from 'react-native';
 import type { CartItem } from '@/lib/cart';
 import { categoryIcon } from '@/lib/categories';
-import { colors, radius } from '@/theme';
+import { colors, radius, shape } from '@/theme';
 import { Icon } from './Icon';
 
 // The item's photo, or its category's outline icon on a light grey square.
@@ -13,12 +13,19 @@ export function ItemPicture({ item, size }: { item: CartItem; size: number }) {
   const category = item.category ?? (item.sample ? 'tumbler' : 'other');
   return (
     <View style={[box, styles.frame]} accessibilityLabel={item.name}>
-      <Icon name={categoryIcon(category)} size={Math.round(size * 0.42)} color={colors.textFaint} strokeWidth={size > 120 ? 1.3 : 1.6} />
+      <Icon name={categoryIcon(category)} size={Math.round(size * 0.42)} color={shape.pictureIcon} strokeWidth={size > 120 ? 1.3 : 1.6} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   photo: { backgroundColor: colors.surface },
-  frame: { alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface },
+  frame: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: shape.border,
+    borderColor: colors.line,
+    ...({ backgroundImage: shape.pictureBg } as object),
+  },
 });

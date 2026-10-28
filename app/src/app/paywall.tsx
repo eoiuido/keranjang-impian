@@ -6,7 +6,7 @@ import { Header, Label, Page, PrimaryButton, SecondaryButton, TextButton, Displa
 import { rupiah } from '@/lib/format';
 import { declineOfferSeen, markDeclineOfferSeen, perWeek, PLANS, type PlanId } from '@/lib/plan';
 import { track } from '@/lib/track';
-import { colors, radius, type } from '@/theme';
+import { colors, radius, shape, type } from '@/theme';
 
 const BENEFITS = [
   'Checkout palsu tanpa batas',
@@ -171,15 +171,15 @@ const styles = StyleSheet.create({
   benefit: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
   benefitText: { ...type.body, flex: 1, color: colors.text },
   plans: { marginTop: 24, gap: 10 },
-  plan: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, padding: 16 },
-  planOn: { borderColor: colors.accent, borderWidth: 2, padding: 15 },
+  plan: { borderWidth: shape.border, borderColor: colors.line, backgroundColor: colors.card, borderRadius: radius.lg, padding: 16 },
+  planOn: { borderColor: colors.accent, boxShadow: shape.shadow },
   planTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   badge: { backgroundColor: colors.accentSoft, borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 3 },
   badgeText: { fontSize: 11, fontWeight: '700', color: colors.accent },
   planPrice: { ...type.money, fontSize: 26, lineHeight: 32, marginTop: 8, color: colors.text },
   planPeriod: { fontSize: 14, fontWeight: '600', color: colors.textSoft },
   planNote: { ...type.small, marginTop: 4, color: colors.textSoft },
-  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
   radioOn: { borderColor: colors.accent },
   radioDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.accent },
   bottom: { marginTop: 'auto', paddingTop: 28, gap: 8 },

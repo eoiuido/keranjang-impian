@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Spirit Belongings: Checkout palsu. Dompet aman.</title>
 <meta name="description" content="Checkout palsu. Dompet aman. Beli barang impianmu tanpa keluar uang beneran.">
-<meta name="theme-color" content="#FFFFFF">
+<meta name="theme-color" content="#FBF7F2">
 <link rel="icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="manifest" href="/manifest.json">
@@ -16,26 +16,47 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Font loads without blocking the first paint; the system font shows until it arrives. -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Bodoni+Moda:ital,wght@1,500&family=Bricolage+Grotesque:wght@800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Bodoni+Moda:ital,wght@1,500&family=Bricolage+Grotesque:wght@800&display=swap"></noscript>
 <!--PREFETCH-->
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  html,body{background:#FFFFFF}
-  body{font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#111114;-webkit-font-smoothing:antialiased}
-  main{max-width:440px;min-height:100vh;min-height:100dvh;margin:0 auto;padding:16px 20px 28px;display:flex;flex-direction:column}
-  .brand{font-size:12px;font-weight:600;letter-spacing:1.6px}
-  .hero{position:relative;margin-top:20px;height:260px;border-radius:20px;background:#F5F5F7;display:flex;align-items:center;justify-content:center}
-  .chip{position:absolute;left:16px;bottom:16px;display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #E7E7EB;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700}
-  h1{margin-top:28px;font-size:34px;line-height:38px;font-weight:800;letter-spacing:-.6px}
-  .sub{margin-top:10px;font-size:16px;line-height:24px;color:#6B6B73}
-  .cta{margin-top:28px;display:flex;flex-direction:column;gap:10px}
-  .btn{display:flex;align-items:center;justify-content:center;min-height:54px;border-radius:14px;background:#D6336C;color:#fff;font-size:16px;font-weight:700;text-decoration:none}
-  .btn:active{opacity:.88}
-  .note{font-size:13px;line-height:18px;color:#6B6B73;text-align:center}
+  html,body{background:#FBF7F2}
+  body{font-family:'Plus Jakarta Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color:#1A1016;-webkit-font-smoothing:antialiased}
+  main{max-width:440px;min-height:100vh;min-height:100dvh;margin:0 auto;padding:16px 20px 28px;display:flex;flex-direction:column;overflow:hidden}
+  .brand{font-size:12px;font-weight:700;letter-spacing:2px}
+  /* Hero: one Butik card and one Stiker card, stacked like two receipts. */
+  .hero{position:relative;margin-top:22px;height:304px}
+  .card{position:absolute;width:57%;height:220px;border-radius:18px;padding:16px;display:flex;flex-direction:column;justify-content:flex-end}
+  .lux{left:0;top:6px;transform:rotate(-5deg);color:#F7F1EA;background:radial-gradient(120% 90% at 20% 0%,#6B2B4F 0%,#2A0F22 60%,#12060F 100%);box-shadow:0 14px 30px rgba(42,15,34,.28)}
+  .lux::after{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(115deg,transparent 30%,rgba(255,220,240,.16) 45%,transparent 60%)}
+  .lux .k{font-size:9px;letter-spacing:2.4px;color:#D9B98A;font-weight:700}
+  .lux .n{font-family:'Bodoni Moda',Didot,serif;font-style:italic;font-size:24px;line-height:1.05;margin-top:6px}
+  .lux .p{font-family:'Bodoni Moda',Didot,serif;font-size:18px;color:#E9D3A4;margin-top:6px}
+  .lux .seal{position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:50%;border:1px solid #D9B98A;padding:4px}
+  .lux .seal i{display:block;width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#8C6A3B,#E9D3A4 40%,#B48A4E 60%,#F4E4C1)}
+  .y2k{right:0;top:44px;transform:rotate(5deg);color:#111;background:linear-gradient(120deg,#FFB3E1,#C9B6FF 30%,#A8F0FF 60%,#FFF1A8);border:2.5px solid #111;box-shadow:5px 5px 0 #111}
+  .y2k .n{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;line-height:1;letter-spacing:-.6px}
+  .y2k .p{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin-top:6px}
+  .burst{position:absolute;top:-22px;right:-14px;width:78px;height:78px;background:#E8FF5A;clip-path:polygon(50% 0,61% 32%,95% 20%,72% 48%,100% 70%,64% 68%,58% 100%,44% 70%,10% 86%,30% 56%,0 30%,36% 34%);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;transform:rotate(-8deg)}
+  .stamp{position:absolute;left:50%;bottom:0;transform:translateX(-50%) rotate(-3deg);background:#fff;border:2px solid #D6336C;color:#D6336C;border-radius:999px;padding:8px 16px;font-size:14px;font-weight:800;white-space:nowrap;box-shadow:0 6px 16px rgba(214,51,108,.18)}
+  h1{margin-top:26px;font-size:40px;line-height:1.02;letter-spacing:-.5px}
+  h1 .a{display:block;font-family:'Bodoni Moda',Didot,serif;font-style:italic;font-weight:500}
+  h1 .b{display:block;font-family:'Bricolage Grotesque','Plus Jakarta Sans',sans-serif;font-weight:800;color:#D6336C;letter-spacing:-1.4px}
+  .sub{margin-top:12px;font-size:16px;line-height:24px;color:#6E5F68}
+  .cta{margin-top:26px;display:flex;flex-direction:column;gap:10px}
+  .btn{display:flex;align-items:center;justify-content:center;min-height:56px;border-radius:999px;background:#1A1016;color:#fff;font-size:16px;font-weight:800;text-decoration:none;box-shadow:4px 4px 0 #D6336C}
+  .btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #D6336C}
+  .note{font-size:13px;line-height:18px;color:#6E5F68;text-align:center}
+  .styles{margin-top:6px;display:flex;justify-content:center;gap:8px;font-size:12px;font-weight:700}
+  .styles{align-items:center}
+  .styles em{font-style:normal;color:#6E5F68;font-weight:600}
+  .styles span{padding:5px 11px;border-radius:999px}
+  .styles .s1{background:#2A0F22;color:#E9D3A4;font-family:'Bodoni Moda',serif;font-style:italic;font-weight:500;font-size:13px}
+  .styles .s2{background:#E8FF5A;border:2px solid #111;font-family:'Bricolage Grotesque',sans-serif;font-weight:800}
   footer{margin-top:auto;padding-top:36px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
-  footer a.login{font-size:14px;font-weight:600;color:#111114}
-  footer p{font-size:12px;line-height:18px;color:#A1A1AA}
+  footer a.login{font-size:14px;font-weight:700;color:#1A1016}
+  footer p{font-size:12px;line-height:18px;color:#9C8E96}
   footer p a{color:inherit}
 </style>
 </head>
@@ -43,14 +64,16 @@
 <main>
   <div class="brand">SPIRIT BELONGINGS</div>
   <div class="hero" aria-hidden="true">
-    <svg width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="#A1A1AA" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5h10l-1 2.5H8z"/><path d="M8 7.5l1.1 12.2a1.6 1.6 0 0 0 1.6 1.3h2.6a1.6 1.6 0 0 0 1.6-1.3L16 7.5"/><path d="M13 5l1.6-3"/><path d="M15.7 10.5h1.2a2 2 0 0 1 2 2v2.2a2 2 0 0 1-2 2h-1.6"/></svg>
-    <div class="chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D6336C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.2 12.3l2.6 2.6 5-5.2"/></svg>Rp850.000 diselamatkan</div>
+    <div class="card lux"><div class="seal"><i></i></div><div class="k">BUTIK</div><div class="n">Tas Mini</div><div class="p">Rp850.000</div></div>
+    <div class="card y2k"><div class="burst">YES!</div><div class="n">Sneakers</div><div class="p">Rp1.200.000</div></div>
+    <div class="stamp">Kamu bayar Rp0 · Dompet aman</div>
   </div>
-  <h1>Checkout palsu.<br>Dompet aman.</h1>
+  <h1><span class="a">Checkout palsu.</span><span class="b">Dompet aman.</span></h1>
   <p class="sub">Beli barang impianmu tanpa keluar uang beneran, dan lihat tabunganmu bertambah.</p>
   <div class="cta">
     <a id="start" class="btn" href="/gaya">Coba checkout palsu</a>
     <p class="note">Gratis 3 kali · Tanpa daftar</p>
+    <div class="styles"><em>2 gaya:</em><span class="s1">Butik</span><span class="s2">Stiker</span></div>
   </div>
   <footer>
     <a class="login" href="/masuk">Sudah bayar? Masuk</a>

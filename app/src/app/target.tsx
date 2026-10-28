@@ -7,7 +7,7 @@ import { syncBackup } from '@/lib/backup';
 import { MAX_PRICE } from '@/lib/cart';
 import { GOAL_TYPES, type GoalTypeId, getGoal, saveGoal } from '@/lib/goal';
 import { isPaid } from '@/lib/plan';
-import { colors, radius, type } from '@/theme';
+import { colors, radius, shape, type } from '@/theme';
 
 const idr = new Intl.NumberFormat('id-ID');
 const MIN_TARGET = 100_000;
@@ -59,8 +59,8 @@ export default function Target() {
           const on = t.id === goalType;
           return (
             <Pressable key={t.id} onPress={() => setGoalType(t.id)} accessibilityRole="radio" accessibilityState={{ checked: on }} style={[styles.type, on && styles.typeOn]}>
-              <Icon name={t.icon} size={26} color={on ? colors.white : colors.text} strokeWidth={1.6} />
-              <Text style={[styles.typeText, on && { color: colors.white }]}>{t.label}</Text>
+              <Icon name={t.icon} size={26} color={on ? colors.onAccent : colors.text} strokeWidth={1.6} />
+              <Text style={[styles.typeText, on && { color: colors.onAccent }]}>{t.label}</Text>
             </Pressable>
           );
         })}
@@ -106,10 +106,10 @@ const styles = StyleSheet.create({
   sub: { ...type.body, marginTop: 6, color: colors.textSoft },
   label: { marginTop: 24, marginBottom: 8 },
   types: { flexDirection: 'row', gap: 8 },
-  type: { flex: 1, alignItems: 'center', gap: 6, borderWidth: 1, borderColor: colors.line, borderRadius: radius.md, paddingVertical: 14 },
-  typeOn: { backgroundColor: colors.text, borderColor: colors.text },
+  type: { flex: 1, alignItems: 'center', gap: 6, borderWidth: shape.border, borderColor: colors.line, backgroundColor: colors.card, borderRadius: radius.sm, paddingVertical: 14 },
+  typeOn: { backgroundColor: colors.accent, boxShadow: shape.shadowSm },
   typeText: { fontSize: 13, fontWeight: '600', color: colors.text },
-  priceField: { flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, paddingHorizontal: 14 },
+  priceField: { flexDirection: 'row', alignItems: 'center', borderWidth: shape.border, borderColor: colors.line, backgroundColor: colors.card, borderRadius: radius.sm, paddingHorizontal: 14 },
   rp: { fontSize: 20, fontWeight: '700', color: colors.textSoft, marginRight: 6 },
   priceInput: { flex: 1, paddingVertical: 12, fontSize: 22, fontWeight: '800', color: colors.text },
   error: { ...type.small, marginTop: 8, color: colors.warn },

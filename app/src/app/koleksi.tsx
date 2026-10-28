@@ -12,7 +12,7 @@ import { type Access, FREE_CHECKOUTS, getAccess, getPendingOrder, type PendingOr
 import { loadWallet, type Wallet } from '@/lib/profile';
 import { monthLabel } from '@/lib/recap';
 import { setSkin, useSkin } from '@/lib/skin';
-import { colors, maxWidth, radius, type } from '@/theme';
+import { colors, maxWidth, radius, shape, type } from '@/theme';
 
 type Data = { wallet: Wallet; items: SavedItem[]; count: number; pending: PendingOrder | null; access: Access | null; goal: Goal | null };
 
@@ -107,7 +107,7 @@ export default function Koleksi() {
               style={({ pressed }) => [styles.goalCta, pressed && { opacity: 0.9 }]}
             >
               <View style={styles.goalCtaIcon}>
-                <Icon name="target" size={26} color={colors.white} strokeWidth={2} />
+                <Icon name="target" size={26} color={colors.onAccent} strokeWidth={2} />
               </View>
               <Text style={styles.goalCtaTitle}>Mau dipakai buat apa?</Text>
               <Text style={styles.goalCtaText}>
@@ -117,7 +117,7 @@ export default function Koleksi() {
               </Text>
               <View style={styles.goalCtaBtn}>
                 <Text style={styles.goalCtaBtnText}>Pasang target tabungan</Text>
-                <Icon name="arrowRight" size={16} color={colors.white} strokeWidth={2.2} />
+                <Icon name="arrowRight" size={16} color={colors.onAccent} strokeWidth={2.2} />
               </View>
             </Pressable>
           )}
@@ -143,7 +143,7 @@ export default function Koleksi() {
         </Text>
       </View>
 
-      <Text style={styles.section}>Koleksimu</Text>
+      <Display style={styles.section}>Koleksimu</Display>
       {items.length === 0 ? (
         <View style={styles.empty}>
           <Icon name="bag" size={28} color={colors.textFaint} />
@@ -157,7 +157,7 @@ export default function Koleksi() {
               <Text style={styles.itemName} numberOfLines={1}>
                 {item.name}
               </Text>
-              <Text style={styles.itemPrice}>{rupiah(item.price)}</Text>
+              <Display kind="money" style={styles.itemPrice}>{rupiah(item.price)}</Display>
               <Text style={styles.itemDate}>
                 {shortDate(item.date)}
                 {item.hutang > 0 ? ' · pakai hutang' : ''}
@@ -190,7 +190,7 @@ function LinkRow({ icon, title, note, badge, onPress }: { icon: IconName; title:
 }
 
 const styles = StyleSheet.create({
-  goalCta: { marginTop: 20, backgroundColor: colors.accentSoft, borderRadius: radius.lg, padding: 18 },
+  goalCta: { marginTop: 20, backgroundColor: colors.accentSoft, borderRadius: radius.lg, padding: 18, borderWidth: shape.border, borderColor: colors.line, boxShadow: shape.shadow },
   goalCtaIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' },
   goalCtaTitle: { ...type.h2, marginTop: 14, color: colors.text },
   goalCtaText: { ...type.body, marginTop: 4, color: colors.text },
@@ -201,19 +201,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     backgroundColor: colors.accent,
-    borderRadius: radius.pill,
+    borderRadius: radius.md,
+    borderWidth: shape.border,
+    borderColor: colors.line,
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
-  goalCtaBtnText: { fontSize: 14, fontWeight: '700', color: colors.white },
-  goal: { marginTop: 20, borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, padding: 16, gap: 10 },
+  goalCtaBtnText: { fontSize: 14, fontWeight: '700', color: colors.onAccent, textTransform: shape.btnCase, letterSpacing: shape.btnSpacing },
+  goal: { marginTop: 20, borderWidth: shape.border, borderColor: colors.line, borderRadius: radius.lg, padding: 16, gap: 10, backgroundColor: colors.card, boxShadow: shape.shadow },
   goalTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   goalName: { ...type.body, fontWeight: '700', flex: 1, color: colors.text },
   goalPct: { fontSize: 18, fontWeight: '800', color: colors.accent },
-  bar: { height: 8, borderRadius: 4, backgroundColor: colors.surface, overflow: 'hidden' },
+  bar: { height: 8, borderRadius: 4, backgroundColor: colors.divider, overflow: 'hidden' },
   barFill: { height: '100%', borderRadius: 4, backgroundColor: colors.accent },
   goalNote: { ...type.small, color: colors.textSoft },
-  linkRow: { marginTop: 12, flexDirection: 'row', alignItems: 'center', gap: 14, borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, paddingHorizontal: 16, paddingVertical: 14 },
+  linkRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    borderWidth: shape.border,
+    borderColor: colors.line,
+    borderRadius: radius.lg,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: colors.card,
+    boxShadow: shape.shadowSm,
+  },
   linkTitle: { ...type.body, fontWeight: '600', color: colors.text },
   linkNote: { ...type.small, color: colors.textSoft },
   badge: { backgroundColor: colors.accentSoft, borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 3 },
@@ -235,11 +249,11 @@ const styles = StyleSheet.create({
   savedAmount: { ...type.money, fontSize: 40, lineHeight: 48, marginTop: 2, color: colors.accent },
   savedSub: { ...type.small, color: colors.textSoft },
   free: { ...type.small, color: colors.textSoft, textAlign: 'center' },
-  section: { ...type.h2, marginTop: 32, marginBottom: 14, color: colors.text },
-  empty: { borderWidth: 1, borderColor: colors.line, borderStyle: 'dashed', borderRadius: radius.lg, padding: 24, alignItems: 'center', gap: 10 },
+  section: { ...type.h2, fontSize: 22, lineHeight: 28, marginTop: 32, marginBottom: 14, color: colors.text },
+  empty: { borderWidth: shape.border, borderColor: colors.line, borderStyle: 'dashed', borderRadius: radius.lg, padding: 24, alignItems: 'center', gap: 10 },
   emptyText: { ...type.body, color: colors.textSoft, textAlign: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP, rowGap: 20 },
   itemName: { ...type.body, fontSize: 14, fontWeight: '600', marginTop: 8, color: colors.text },
-  itemPrice: { fontSize: 14, fontWeight: '800', color: colors.text },
+  itemPrice: { fontSize: 15, fontWeight: '800', color: colors.text },
   itemDate: { ...type.small, fontSize: 12, color: colors.textFaint },
 });
