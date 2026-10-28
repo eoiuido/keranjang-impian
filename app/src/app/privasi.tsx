@@ -5,8 +5,9 @@ export default function Privasi() {
   return (
     <LegalPage title="Kebijakan Privasi" updated="28 Oktober 2026">
       <P>
-        Spirit Belongings adalah aplikasi dari EOI. Kebijakan ini menjelaskan data apa yang kami simpan, di mana, dan
-        hak kamu atas data itu, sesuai UU No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP).
+        Spirit Belongings adalah aplikasi dari PT Eka Olah Informatika (&quot;EOI&quot;, &quot;kami&quot;), selaku pengendali data
+        pribadi. Kebijakan ini menjelaskan data apa yang kami simpan, di mana, dan hak kamu atas data itu, sesuai UU No. 27
+        Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP).
       </P>
 
       <H>Data yang hanya ada di HP kamu</H>
@@ -60,7 +61,7 @@ export default function Privasi() {
 
       <H>Privacy Policy (English summary)</H>
       <P>
-        Spirit Belongings is an EOI app. Your income and expense numbers, items, photos and address stay on your phone.
+        Spirit Belongings is an app by PT Eka Olah Informatika (EOI), the data controller. Your income and expense numbers, items, photos and address stay on your phone.
         For paid users we store your email, payment records, plan period, and a backup of numbers and item names
         (never photos or address). Payments are processed by DOKU; we never see card, bank or e-wallet details. We may use
         ad-measurement tools without sending money figures, addresses, photos or your collection. We don&apos;t sell

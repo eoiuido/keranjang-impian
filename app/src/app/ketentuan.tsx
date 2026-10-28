@@ -4,7 +4,7 @@ import { H, LegalPage, P } from '@/components/Legal';
 export default function Ketentuan() {
   return (
     <LegalPage title="Syarat & Ketentuan" updated="28 Oktober 2026">
-      <P>Dengan memakai Spirit Belongings (aplikasi dari EOI), kamu setuju dengan ketentuan berikut.</P>
+      <P>Dengan memakai Spirit Belongings (aplikasi dari PT Eka Olah Informatika, &quot;EOI&quot;), kamu setuju dengan ketentuan berikut.</P>
 
       <H>Apa aplikasi ini</H>
       <P>
@@ -51,7 +51,7 @@ export default function Ketentuan() {
 
       <H>Terms (English summary)</H>
       <P>
-        Spirit Belongings is a shopping simulation by EOI: in-app checkouts use no real money, ship nothing, and are not
+        Spirit Belongings is a shopping simulation by PT Eka Olah Informatika (EOI): in-app checkouts use no real money, ship nothing, and are not
         linked to any shop, bank or payment provider. The hutang feature is a simulation, not a loan or financial advice.
         Paid plans (weekly Rp10.000 / 7 days, yearly Rp119.000 / 1 year) are one-time payments via DOKU and never renew
         automatically; refunds follow the Refund Policy. Don&apos;t misuse the app. It is provided as is; our liability is
