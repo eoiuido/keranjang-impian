@@ -2,7 +2,7 @@ import { Redirect, router } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { ItemPicture } from '@/components/ItemPicture';
 import { SuccessMark } from '@/components/SuccessMark';
-import { Card, Page, PrimaryButton, Row, TextButton } from '@/components/ui';
+import { Card, Page, PrimaryButton, Row, TextButton, Display } from '@/components/ui';
 import { last } from '@/lib/collection';
 import { rupiah } from '@/lib/format';
 import { withInterest } from '@/lib/money';
@@ -20,7 +20,7 @@ export default function Berhasil() {
         <SuccessMark />
         <Text style={styles.done}>Pembayaran berhasil · Rp0</Text>
         <Text style={styles.big}>Kamu baru saja menyelamatkan</Text>
-        <Text style={styles.amount}>{rupiah(item.price)}</Text>
+        <Display kind="money" style={styles.amount}>{rupiah(item.price)}</Display>
         <Text style={styles.sub}>Uang aslimu tetap aman.</Text>
       </View>
 

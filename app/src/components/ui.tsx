@@ -1,12 +1,17 @@
 import type { ReactNode } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, type StyleProp, StyleSheet, Text, type TextStyle, View, type ViewStyle } from 'react-native';
-import { colors, maxWidth, radius, type } from '@/theme';
+import { ActivityIndicator, Pressable, ScrollView, type StyleProp, StyleSheet, Text, type TextProps, type TextStyle, View, type ViewStyle } from 'react-native';
+import { colors, maxWidth, radius, shape, type } from '@/theme';
 import { Icon, type IconName } from './Icon';
 
+// The browser understands data-* attributes; React Native's types don't list them.
+const data = (d: Record<string, string>) => ({ dataSet: d }) as object;
+
 // A phone-width column that scrolls; used by every screen.
-export function Page({ children, bg = colors.bg }: { children: ReactNode; bg?: string }) {
+// skin="netral" keeps the plain look whatever skin is chosen (real-money screens).
+export function Page({ children, bg = colors.bg, skin }: { children: ReactNode; bg?: string; skin?: 'netral' }) {
   return (
     <ScrollView
+      {...(skin ? data({ skin }) : {})}
       style={{ backgroundColor: bg }}
       contentContainerStyle={[styles.page, { backgroundColor: bg }]}
       keyboardShouldPersistTaps="handled"
@@ -33,6 +38,12 @@ export function Header({ title, onBack, right }: { title?: string; onBack?: () =
   );
 }
 
+// Big headings and money amounts: uses the skin's display font (serif in Butik, chunky in Stiker).
+// kind="money" keeps amounts upright (only titles turn italic in Butik).
+export function Display({ kind = 'title', ...props }: TextProps & { kind?: 'title' | 'money' }) {
+  return <Text {...data({ display: kind })} {...props} />;
+}
+
 export function Brand() {
   return <Text style={styles.brand}>SPIRIT BELONGINGS</Text>;
 }
@@ -40,20 +51,20 @@ export function Brand() {
 type ButtonProps = { label: string; onPress?: () => void; disabled?: boolean; busy?: boolean; icon?: IconName };
 
 export function PrimaryButton({ label, onPress, disabled, busy, icon, tone = 'accent' }: ButtonProps & { tone?: 'accent' | 'ink' }) {
-  const bg = tone === 'ink' ? colors.ink : colors.accent;
+  const ink = tone === 'ink';
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled || busy}
       accessibilityRole="button"
-      style={({ pressed }) => [styles.button, { backgroundColor: bg }, pressed && styles.pressed, (disabled || busy) && styles.disabled]}
+      style={({ pressed }) => [styles.button, ink ? styles.ink : styles.accent, pressed && styles.pressed, (disabled || busy) && styles.disabled]}
     >
       {busy ? (
-        <ActivityIndicator color={colors.white} />
+        <ActivityIndicator color={ink ? colors.white : colors.onAccent} />
       ) : (
         <View style={styles.buttonInner}>
-          {icon && <Icon name={icon} size={18} color={colors.white} strokeWidth={2} />}
-          <Text style={styles.buttonText}>{label}</Text>
+          {icon && <Icon name={icon} size={18} color={ink ? colors.white : colors.onAccent} strokeWidth={2} />}
+          <Text {...(ink ? {} : data({ btn: '' }))} style={[styles.buttonText, ink && styles.inkText]}>{label}</Text>
         </View>
       )}
     </Pressable>
@@ -70,7 +81,7 @@ export function SecondaryButton({ label, onPress, disabled, icon }: ButtonProps)
     >
       <View style={styles.buttonInner}>
         {icon && <Icon name={icon} size={18} strokeWidth={2} />}
-        <Text style={[styles.buttonText, { color: colors.text }]}>{label}</Text>
+        <Text {...data({ btn: '' })} style={[styles.buttonText, { color: colors.text }]}>{label}</Text>
       </View>
     </Pressable>
   );
@@ -125,14 +136,14 @@ export function Steps({ current, total }: { current: number; total: number }) {
 
 export const field = StyleSheet.create({
   input: {
-    borderWidth: 1,
+    borderWidth: shape.border,
     borderColor: colors.line,
     borderRadius: radius.sm,
     paddingHorizontal: 14,
     paddingVertical: 13,
     fontSize: 16,
     color: colors.text,
-    backgroundColor: colors.bg,
+    backgroundColor: colors.card,
   },
 }).input;
 
@@ -144,17 +155,21 @@ const styles = StyleSheet.create({
   iconBtn: { width: 40, height: 40, justifyContent: 'center' },
   brand: { ...type.label, fontSize: 12, letterSpacing: 1.6, color: colors.text },
   button: { alignSelf: 'stretch', borderRadius: radius.md, paddingVertical: 16, alignItems: 'center', justifyContent: 'center', minHeight: 54 },
+  accent: { backgroundColor: colors.accent, borderWidth: shape.border, borderColor: colors.line, boxShadow: shape.shadow },
+  // Real-money buttons stay plain dark in every skin.
+  ink: { backgroundColor: colors.ink, borderRadius: 14 },
+  inkText: { color: colors.white, textTransform: 'none', letterSpacing: 0 },
   buttonInner: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  buttonText: { color: colors.white, fontSize: 16, fontWeight: '700' },
-  secondary: { backgroundColor: colors.bg, borderWidth: 1, borderColor: colors.line },
+  buttonText: { color: colors.onAccent, fontSize: 16, fontWeight: '700', textTransform: shape.btnCase, letterSpacing: shape.btnSpacing },
+  secondary: { backgroundColor: colors.card, borderWidth: shape.border, borderColor: colors.line },
   pressed: { opacity: 0.88 },
   pressedLight: { backgroundColor: colors.surface },
   disabled: { opacity: 0.35 },
   textBtn: { alignSelf: 'center', paddingVertical: 10, paddingHorizontal: 12 },
   textBtnText: { fontSize: 14, fontWeight: '600', color: colors.textSoft },
-  card: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, padding: 16, backgroundColor: colors.bg },
+  card: { borderWidth: shape.border, borderColor: colors.line, borderRadius: radius.lg, padding: 16, backgroundColor: colors.card, boxShadow: shape.shadow },
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 11, gap: 12 },
-  rowLine: { borderTopWidth: 1, borderTopColor: colors.line },
+  rowLine: { borderTopWidth: 1, borderTopColor: colors.divider },
   rowLabel: { ...type.body, color: colors.textSoft },
   rowValue: { ...type.body, fontWeight: '600', color: colors.text },
   rowStrong: { color: colors.text, fontWeight: '800', fontSize: 16 },
@@ -162,6 +177,6 @@ const styles = StyleSheet.create({
   noticeText: { ...type.small, fontSize: 14, lineHeight: 20, color: colors.text, flex: 1 },
   label: { ...type.label, color: colors.textSoft, textTransform: 'uppercase' },
   steps: { flexDirection: 'row', gap: 6 },
-  step: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.line },
+  step: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.divider },
   stepOn: { backgroundColor: colors.text },
 });

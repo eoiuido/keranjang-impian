@@ -2,7 +2,7 @@ import { Link, router } from 'expo-router';
 import Head from 'expo-router/head';
 import { StyleSheet, Text, View } from 'react-native';
 import { Icon } from '@/components/Icon';
-import { Brand, Page, PrimaryButton } from '@/components/ui';
+import { Brand, Page, PrimaryButton, Display } from '@/components/ui';
 import { getCheckoutCount } from '@/lib/collection';
 import { getProfile } from '@/lib/profile';
 import { track } from '@/lib/track';
@@ -14,7 +14,7 @@ export default function Landing() {
     track('start_tapped');
     // Returning on this phone: skip what they already did.
     const [profile, count] = await Promise.all([getProfile(), getCheckoutCount()]);
-    router.push(count > 0 ? '/koleksi' : profile ? '/barang' : '/mulai');
+    router.push(count > 0 ? '/koleksi' : profile ? '/barang' : '/gaya');
   };
 
   return (
@@ -32,9 +32,9 @@ export default function Landing() {
         </View>
       </View>
 
-      <Text style={styles.headline} role="heading">
+      <Display style={styles.headline} role="heading">
         Checkout palsu.{'\n'}Dompet aman.
-      </Text>
+      </Display>
       <Text style={styles.sub}>Beli barang impianmu tanpa keluar uang beneran, dan lihat tabunganmu bertambah.</Text>
 
       <View style={styles.cta}>

@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Icon } from '@/components/Icon';
-import { field, Header, Label, Page, PrimaryButton, TextButton } from '@/components/ui';
+import { field, Header, Label, Page, PrimaryButton, TextButton, Display } from '@/components/ui';
 import { syncBackup } from '@/lib/backup';
 import { MAX_PRICE } from '@/lib/cart';
 import { GOAL_TYPES, type GoalTypeId, getGoal, saveGoal } from '@/lib/goal';
@@ -50,7 +50,7 @@ export default function Target() {
   return (
     <Page>
       <Header title="Target tabungan" onBack={() => (router.canGoBack() ? router.back() : router.replace('/koleksi'))} />
-      <Text style={styles.title}>Uang yang kamu selamatkan mau dipakai buat apa?</Text>
+      <Display style={styles.title}>Uang yang kamu selamatkan mau dipakai buat apa?</Display>
       <Text style={styles.sub}>Setiap checkout palsu menambah progres ke target ini.</Text>
 
       <Label style={styles.label}>Jenis</Label>

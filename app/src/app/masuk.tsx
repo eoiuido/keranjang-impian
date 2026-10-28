@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { field, Header, Label, Notice, Page, PrimaryButton, TextButton } from '@/components/ui';
+import { field, Header, Label, Notice, Page, PrimaryButton, TextButton, Display } from '@/components/ui';
 import { ApiError, requestLoginCode, verifyLoginCode } from '@/lib/api';
 import { restoreBackup, syncBackup } from '@/lib/backup';
 import { saveAccess } from '@/lib/plan';
@@ -76,9 +76,9 @@ export default function Masuk() {
 
   if (expiredAccess) {
     return (
-      <Page>
+      <Page skin="netral">
         <Header onBack={() => router.replace('/')} />
-        <Text style={styles.title}>Akses kamu sudah habis</Text>
+        <Display style={styles.title}>Akses kamu sudah habis</Display>
         <Text style={styles.sub}>Kamu sudah masuk, tapi paketmu sudah berakhir. Mau lanjut lagi?</Text>
         <View style={styles.bottom}>
           <PrimaryButton label="Lihat paket" onPress={() => router.replace('/paywall')} />
@@ -89,9 +89,9 @@ export default function Masuk() {
   }
 
   return (
-    <Page>
+    <Page skin="netral">
       <Header onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
-      <Text style={styles.title}>Sudah bayar? Masuk</Text>
+      <Display style={styles.title}>Sudah bayar? Masuk</Display>
       <Text style={styles.sub}>Pakai email yang kamu pakai waktu bayar. Kami kirim kode 6 angka.</Text>
 
       <Label style={styles.fieldLabel}>Email</Label>

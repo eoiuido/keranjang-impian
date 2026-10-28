@@ -2,11 +2,13 @@ import { router, useFocusEffect } from 'expo-router';
 import { type ReactNode, useCallback, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Icon, type IconName } from '@/components/Icon';
+import { SkinPicker } from '@/components/SkinPicker';
 import { Card, Header, Label, Page } from '@/components/ui';
 import { logout } from '@/lib/account';
 import { rupiah } from '@/lib/format';
 import { type Access, getAccess, PLANS } from '@/lib/plan';
 import { getProfile, type Profile } from '@/lib/profile';
+import { useSkin } from '@/lib/skin';
 import { colors, type } from '@/theme';
 
 const HELP = 'eoi.uido@gmail.com';
@@ -16,6 +18,7 @@ const shortDate = (d: string) => new Date(d).toLocaleDateString('id-ID', { day: 
 export default function Pengaturan() {
   const [access, setAccess] = useState<Access | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const skin = useSkin();
 
   useFocusEffect(
     useCallback(() => {
@@ -50,6 +53,9 @@ export default function Pengaturan() {
           </>
         )}
       </Card>
+
+      <Label style={styles.section}>Gaya tampilan</Label>
+      <SkinPicker value={skin} onChange={() => {}} compact />
 
       <Label style={styles.section}>Uang bulanan</Label>
       <Card style={styles.list}>
@@ -119,7 +125,7 @@ const styles = StyleSheet.create({
   section: { marginTop: 22, marginBottom: 8 },
   list: { padding: 0, overflow: 'hidden' },
   item: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingVertical: 14 },
-  itemLine: { borderTopWidth: 1, borderTopColor: colors.line },
+  itemLine: { borderTopWidth: 1, borderTopColor: colors.divider },
   title: { ...type.body, fontWeight: '600', color: colors.text },
   note: { ...type.small, color: colors.textSoft },
   footer: { ...type.small, marginTop: 28, color: colors.textFaint, textAlign: 'center' },

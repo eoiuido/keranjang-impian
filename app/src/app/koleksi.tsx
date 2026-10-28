@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { Icon, type IconName } from '@/components/Icon';
 import { ItemPicture } from '@/components/ItemPicture';
-import { Brand, Card, Page, PrimaryButton, Row } from '@/components/ui';
+import { Brand, Card, Page, PrimaryButton, Row, Display } from '@/components/ui';
 import { syncBackupIfDirty } from '@/lib/backup';
 import { getCheckoutCount, getItems, type SavedItem } from '@/lib/collection';
 import { monthKey, rupiah } from '@/lib/format';
@@ -11,6 +11,7 @@ import { type Goal, getGoal, goalIcon, goalPercent } from '@/lib/goal';
 import { type Access, FREE_CHECKOUTS, getAccess, getPendingOrder, type PendingOrder, PLANS } from '@/lib/plan';
 import { loadWallet, type Wallet } from '@/lib/profile';
 import { monthLabel } from '@/lib/recap';
+import { setSkin, useSkin } from '@/lib/skin';
 import { colors, maxWidth, radius, type } from '@/theme';
 
 type Data = { wallet: Wallet; items: SavedItem[]; count: number; pending: PendingOrder | null; access: Access | null; goal: Goal | null };
@@ -23,6 +24,7 @@ const shortDate = (d: string) => new Date(d).toLocaleDateString('id-ID', { day: 
 export default function Koleksi() {
   const [data, setData] = useState<Data | null | undefined>(undefined);
   const { width } = useWindowDimensions();
+  const skin = useSkin();
 
   // Reload every time this screen is shown (e.g. after another checkout).
   useFocusEffect(
@@ -48,9 +50,19 @@ export default function Koleksi() {
     <Page>
       <View style={styles.top}>
         <Brand />
-        <Pressable onPress={() => router.push('/pengaturan')} accessibilityRole="button" accessibilityLabel="Pengaturan" hitSlop={12}>
-          <Icon name="settings" size={22} />
-        </Pressable>
+        <View style={styles.topIcons}>
+          <Pressable
+            onPress={() => setSkin(skin === 'stiker' ? 'butik' : 'stiker')}
+            accessibilityRole="button"
+            accessibilityLabel={skin === 'stiker' ? 'Ganti ke gaya Butik' : 'Ganti ke gaya Stiker'}
+            hitSlop={12}
+          >
+            <Icon name="sparkle" size={22} />
+          </Pressable>
+          <Pressable onPress={() => router.push('/pengaturan')} accessibilityRole="button" accessibilityLabel="Pengaturan" hitSlop={12}>
+            <Icon name="settings" size={22} />
+          </Pressable>
+        </View>
       </View>
 
       {pending && (
@@ -66,7 +78,7 @@ export default function Koleksi() {
       )}
 
       <Text style={styles.savedLabel}>Total uang yang kamu selamatkan</Text>
-      <Text style={styles.savedAmount}>{rupiah(saved)}</Text>
+      <Display kind="money" style={styles.savedAmount}>{rupiah(saved)}</Display>
       <Text style={styles.savedSub}>dari {items.length} barang yang gak jadi kamu beli beneran</Text>
 
       {paidActive ? (
@@ -206,6 +218,7 @@ const styles = StyleSheet.create({
   linkNote: { ...type.small, color: colors.textSoft },
   badge: { backgroundColor: colors.accentSoft, borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 3 },
   badgeText: { fontSize: 11, fontWeight: '700', color: colors.accent },
+  topIcons: { flexDirection: 'row', alignItems: 'center', gap: 18 },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   pending: {
     marginTop: 16,

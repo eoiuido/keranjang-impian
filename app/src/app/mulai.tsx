@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { MoneySlider } from '@/components/MoneySlider';
 import { onboarding } from '@/components/onboarding';
-import { Header, Notice, Page, PrimaryButton, Steps } from '@/components/ui';
+import { Display, Header, Notice, Page, PrimaryButton, Steps } from '@/components/ui';
 import { draft } from '@/lib/profile';
 
 // S2. Onboarding 1: monthly money.
@@ -20,7 +20,7 @@ export default function Mulai() {
     <Page>
       <Header onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
       <Steps current={1} total={2} />
-      <Text style={onboarding.title}>Uang bulanan kamu berapa?</Text>
+      <Display style={onboarding.title}>Uang bulanan kamu berapa?</Display>
       <Text style={onboarding.sub}>Uang saku atau gaji, kira-kira aja.</Text>
 
       <View style={{ marginTop: 20 }}>

@@ -148,7 +148,7 @@ function Confirm({ orderId }: { orderId: string }) {
 
   if (order?.status === 'paid') {
     return (
-      <Page>
+      <Page skin="netral">
         <View style={s.center}>
           <SuccessMark />
           <Text style={s.thanksBig}>Terima kasih!</Text>
@@ -226,7 +226,7 @@ function RealPage({ children, onBack }: { children: ReactNode; onBack?: () => vo
         <Icon name="lock" size={14} color={colors.white} strokeWidth={2} />
         <Text style={s.bandText}>Pembayaran ASLI · uang beneran</Text>
       </View>
-      <Page>
+      <Page skin="netral">
         <Header onBack={onBack} />
         {children}
       </Page>

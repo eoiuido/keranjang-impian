@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { StyleSheet, Text } from 'react-native';
-import { Header, Page } from '@/components/ui';
+import { Header, Page, Display } from '@/components/ui';
 import { colors, type } from '@/theme';
 
 // Refund and contact policy (spec.md section 8). Plain words, Indonesian first.
@@ -8,7 +8,7 @@ export default function Refund() {
   return (
     <Page>
       <Header onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
-      <Text style={styles.title}>Kebijakan Refund & Kontak</Text>
+      <Display style={styles.title}>Kebijakan Refund & Kontak</Display>
 
       <Text style={styles.h}>Uang kembali kalau:</Text>
       <Text style={styles.p}>• Kamu terpotong dua kali untuk pembayaran yang sama.</Text>

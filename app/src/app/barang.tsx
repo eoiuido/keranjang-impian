@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Icon } from '@/components/Icon';
 import { ItemPicture } from '@/components/ItemPicture';
-import { field, Header, Label, Page, PrimaryButton } from '@/components/ui';
+import { field, Header, Label, Page, PrimaryButton, Display } from '@/components/ui';
 import { cart, type CartItem, MAX_PRICE, MIN_PRICE, SAMPLE_ITEM } from '@/lib/cart';
 import { CATEGORIES, type CategoryId } from '@/lib/categories';
 import { rupiah } from '@/lib/format';
@@ -142,7 +142,7 @@ export default function Barang() {
         <View style={styles.sample}>
           <ItemPicture item={item} size={240} />
           <Text style={styles.name}>{item.name}</Text>
-          <Text style={styles.price}>{rupiah(item.price)}</Text>
+          <Display kind="money" style={styles.price}>{rupiah(item.price)}</Display>
           <Text style={styles.hint}>Contoh barang. Pilih "Barangku" untuk barang yang lagi kamu pengen.</Text>
         </View>
       )}

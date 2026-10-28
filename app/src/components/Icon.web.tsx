@@ -13,12 +13,11 @@ export function Icon({ name, size = 24, color = colors.text, strokeWidth = 1.75 
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={color}
       strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
-      style={{ display: 'block', flexShrink: 0 }}
+      style={{ display: 'block', flexShrink: 0, stroke: color }}
     >
       {ICONS[name].map((s, i) =>
         s[0] === 'p' ? (

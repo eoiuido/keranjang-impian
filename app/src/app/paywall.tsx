@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Icon } from '@/components/Icon';
-import { Header, Label, Page, PrimaryButton, SecondaryButton, TextButton } from '@/components/ui';
+import { Header, Label, Page, PrimaryButton, SecondaryButton, TextButton, Display } from '@/components/ui';
 import { rupiah } from '@/lib/format';
 import { declineOfferSeen, markDeclineOfferSeen, perWeek, PLANS, type PlanId } from '@/lib/plan';
 import { track } from '@/lib/track';
@@ -53,7 +53,7 @@ export default function Paywall() {
         <View style={styles.offerBadge}>
           <Text style={styles.offerBadgeText}>Penawaran sekali saja</Text>
         </View>
-        <Text style={styles.title}>Tahunan cuma {rupiah(y.offerPrice)}</Text>
+        <Display style={styles.title}>Tahunan cuma {rupiah(y.offerPrice)}</Display>
         <View style={styles.offerPriceRow}>
           <Text style={styles.strike}>{rupiah(y.price)}</Text>
           <Text style={styles.save}>Hemat {rupiah(y.price - y.offerPrice)}</Text>
@@ -74,7 +74,7 @@ export default function Paywall() {
   return (
     <Page>
       <Header onBack={() => router.back()} />
-      <Text style={styles.title}>Lanjut checkout palsu tanpa batas</Text>
+      <Display style={styles.title}>Lanjut checkout palsu tanpa batas</Display>
       <Text style={styles.sub}>3 checkout gratismu sudah terpakai. Uangmu tetap aman.</Text>
       <Benefits />
 
@@ -138,9 +138,9 @@ function PlanCard(p: { on: boolean; onPress: () => void; name: string; price: st
         <View style={{ flex: 1 }} />
         <View style={[styles.radio, p.on && styles.radioOn]}>{p.on && <View style={styles.radioDot} />}</View>
       </View>
-      <Text style={styles.planPrice}>
+      <Display kind="money" style={styles.planPrice}>
         {p.price} <Text style={styles.planPeriod}>{p.period}</Text>
-      </Text>
+      </Display>
       <Text style={styles.planNote}>{p.note}</Text>
     </Pressable>
   );

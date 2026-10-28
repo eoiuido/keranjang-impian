@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { type GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 import { rupiah } from '@/lib/format';
 import { colors, type } from '@/theme';
+import { Display } from './ui';
 import { Icon } from './Icon';
 
 type Props = {
@@ -35,9 +36,9 @@ export function MoneySlider({ value, onChange, sliderMax, max, step = 100_000, l
 
   return (
     <View>
-      <Text style={styles.amount} accessibilityLiveRegion="polite">
+      <Display kind="money" style={styles.amount} accessibilityLiveRegion="polite">
         {rupiah(value)}
-      </Text>
+      </Display>
       <View style={styles.row}>
         <RoundButton sign="−" onPress={() => onChange(clamp(value - step))} disabled={value <= 0} />
         <View
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 14, userSelect: 'none' },
   // Tall invisible touch area; touchAction stops the page scrolling while dragging.
   hit: { flex: 1, height: 48, justifyContent: 'center', touchAction: 'none', cursor: 'pointer' } as object,
-  track: { height: 6, borderRadius: 3, backgroundColor: colors.line, overflow: 'hidden' },
+  track: { height: 6, borderRadius: 3, backgroundColor: colors.divider, overflow: 'hidden' },
   fill: { height: '100%', backgroundColor: colors.accent },
   thumb: {
     position: 'absolute',

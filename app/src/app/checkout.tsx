@@ -5,7 +5,7 @@ import { FakeQR } from '@/components/FakeQR';
 import { Icon, type IconName } from '@/components/Icon';
 import { ItemPicture } from '@/components/ItemPicture';
 import { ScanAnimation } from '@/components/ScanAnimation';
-import { Card, field, Header, Label, Notice, Page, PrimaryButton, Row, SecondaryButton } from '@/components/ui';
+import { Card, field, Header, Label, Notice, Page, PrimaryButton, Row, SecondaryButton, Display } from '@/components/ui';
 import { syncBackup } from '@/lib/backup';
 import { cart } from '@/lib/cart';
 import { completeCheckout, getAddress, saveAddress } from '@/lib/collection';
@@ -13,6 +13,7 @@ import { rupiah } from '@/lib/format';
 import { payoffPlan, withInterest } from '@/lib/money';
 import { needsPaywall } from '@/lib/plan';
 import { getProfile, loadWallet } from '@/lib/profile';
+import { useSkin } from '@/lib/skin';
 import { track } from '@/lib/track';
 import { colors, radius, type } from '@/theme';
 
@@ -42,6 +43,7 @@ const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 // S5-S7. Fake checkout: cart + address, (hutang), payment choice, fake QRIS, scan.
 export default function Checkout() {
   const item = cart.item;
+  const skin = useSkin();
   const [stage, setStage] = useState<Stage>('cart');
   const [address, setAddress] = useState('');
   const [balance, setBalance] = useState<number | null>(null);
@@ -101,13 +103,19 @@ export default function Checkout() {
 
         {stage === 'cart' && (
           <>
+            {skin && (
+              <Display style={styles.cartTitle}>
+                {skin === 'butik' ? 'Satu langkah lagi, sayang.' : 'Checkout '}
+                {skin === 'stiker' && <Text style={{ color: colors.accent }}>dulu!</Text>}
+              </Display>
+            )}
             <View style={styles.itemRow}>
               <ItemPicture item={item} size={76} />
               <View style={{ flex: 1 }}>
                 <Text style={styles.itemName} numberOfLines={2}>
                   {item.name}
                 </Text>
-                <Text style={styles.itemPrice}>{rupiah(item.price)}</Text>
+                <Display kind="money" style={styles.itemPrice}>{rupiah(item.price)}</Display>
               </View>
             </View>
 
@@ -196,7 +204,7 @@ export default function Checkout() {
             <Text style={styles.qrisMethod}>{method}</Text>
             <FakeQR size={210} />
             <Text style={styles.strike}>{rupiah(item.price)}</Text>
-            <Text style={styles.youPay}>Kamu bayar Rp0</Text>
+            <Display kind="money" style={styles.youPay}>Kamu bayar Rp0</Display>
             <View style={styles.bottomFull}>
               <PrimaryButton label="Scan & bayar" icon="qr" onPress={scanAndPay} disabled={stage !== 'qris'} />
             </View>
@@ -221,7 +229,7 @@ function HutangInfo({ amount, existing, monthly, onYes, onNo }: { amount: number
   return (
     <>
       <Label>Hutang baru</Label>
-      <Text style={styles.hutangAmount}>{rupiah(amount)}</Text>
+      <Display kind="money" style={styles.hutangAmount}>{rupiah(amount)}</Display>
       {existing > 0 && <Text style={styles.hutangText}>Total hutangmu jadi {rupiah(total)}.</Text>}
 
       <Card style={{ marginTop: 18, paddingVertical: 6 }}>
@@ -252,6 +260,7 @@ function HutangInfo({ amount, existing, monthly, onYes, onNo }: { amount: number
 
 const styles = StyleSheet.create({
   itemRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
+  cartTitle: { ...type.title, fontSize: 30, lineHeight: 34, color: colors.text, marginBottom: 18 },
   itemName: { ...type.body, fontWeight: '600', color: colors.text },
   itemPrice: { ...type.h2, marginTop: 2, color: colors.text },
   label: { marginTop: 24, marginBottom: 8 },
@@ -261,7 +270,7 @@ const styles = StyleSheet.create({
   bottom: { marginTop: 'auto', paddingTop: 28, gap: 10 },
   bottomFull: { alignSelf: 'stretch', marginTop: 24 },
   method: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingVertical: 14 },
-  methodLine: { borderTopWidth: 1, borderTopColor: colors.line },
+  methodLine: { borderTopWidth: 1, borderTopColor: colors.divider },
   methodIcon: { width: 40, height: 40, borderRadius: radius.sm, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
   methodName: { fontSize: 15, fontWeight: '700', color: colors.text },
   methodNote: { ...type.small, color: colors.textSoft },

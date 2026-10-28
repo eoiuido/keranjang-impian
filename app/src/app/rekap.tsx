@@ -1,7 +1,7 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Card, Header, Notice, Page, PrimaryButton, SecondaryButton } from '@/components/ui';
+import { Card, Header, Notice, Page, PrimaryButton, SecondaryButton, Display } from '@/components/ui';
 import { getItems } from '@/lib/collection';
 import { monthKey, rupiah } from '@/lib/format';
 import { isPaid } from '@/lib/plan';
@@ -34,7 +34,7 @@ export default function Rekap() {
     return (
       <Page>
         <Header title="Rekap bulanan" onBack={back} />
-        <Text style={styles.title}>Rekap bulanan ada di paket berbayar</Text>
+        <Display style={styles.title}>Rekap bulanan ada di paket berbayar</Display>
         <Text style={styles.sub}>Lihat berapa yang kamu selamatkan tiap bulan, lalu bagikan kartunya.</Text>
         <View style={styles.bottom}>
           <PrimaryButton label="Lihat paket" onPress={() => router.push('/paywall')} />
@@ -79,7 +79,7 @@ export default function Rekap() {
         <Text style={styles.brand}>SPIRIT BELONGINGS</Text>
         <Text style={styles.month}>Rekap {monthLabel(r.month)}</Text>
         <Text style={styles.lead}>Aku menyelamatkan</Text>
-        <Text style={styles.amount}>{rupiah(r.total)}</Text>
+        <Display kind="money" style={styles.amount}>{rupiah(r.total)}</Display>
         <Text style={styles.count}>dari {r.count} barang yang gak jadi aku beli</Text>
         {r.top.map((i, n) => (
           <View key={n} style={styles.row}>
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   lead: { ...type.body, marginTop: 18, fontWeight: '600', color: colors.text },
   amount: { ...type.money, fontSize: 40, lineHeight: 48, color: colors.accent },
   count: { ...type.small, color: colors.textSoft, marginBottom: 10 },
-  row: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: colors.line },
+  row: { flexDirection: 'row', justifyContent: 'space-between', gap: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: colors.divider },
   rowName: { ...type.body, flex: 1, color: colors.textSoft },
   rowPrice: { ...type.body, fontWeight: '700', color: colors.text },
   tagline: { ...type.body, fontWeight: '800', marginTop: 16, color: colors.text },

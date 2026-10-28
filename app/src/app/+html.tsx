@@ -1,12 +1,20 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
+import { skinCss } from '@/theme';
 
 // Runs only at build time: the HTML wrapper around every page.
 const css = `
-body { background-color: #FFFFFF; }
-* { font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif !important; }
+${skinCss()}
+body { background-color: var(--sb-bg); }
+* { font-family: var(--sb-fontBody) !important; }
+[data-display], [data-display] * { font-family: var(--sb-fontDisplay) !important; font-weight: var(--sb-displayWeight) !important; letter-spacing: var(--sb-displaySpacing) !important; }
+[data-display="title"] { font-style: var(--sb-titleStyle) !important; }
+[data-btn] { font-family: var(--sb-fontButton) !important; font-weight: var(--sb-buttonWeight) !important; font-size: var(--sb-buttonSize) !important; }
 input, textarea { outline: none; }
 `;
+
+// Applies the saved skin before anything is drawn, so there is no flash of the wrong look.
+const applySkin = `try{var s=localStorage.getItem('sb-skin');if(s==='butik'||s==='stiker')document.documentElement.setAttribute('data-skin',s)}catch(e){}`;
 
 export default function Root({ children }: PropsWithChildren) {
   return (
@@ -29,8 +37,9 @@ export default function Root({ children }: PropsWithChildren) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Bodoni+Moda:ital,wght@0,500;0,700;1,500&family=Bricolage+Grotesque:wght@600;800&display=swap"
         />
+        <script dangerouslySetInnerHTML={{ __html: applySkin }} />
         <ScrollViewStyleReset />
         <style dangerouslySetInnerHTML={{ __html: css }} />
       </head>

@@ -11,7 +11,7 @@ Number format everywhere: Indonesian (Rp79.000, 35,5%).
 | Topic | Decision |
 |---|---|
 | Name | **Spirit Belongings** (renamed from Keranjang Impian on 2026-10-28). Address: **spirit-belongings.eoi-apps.my.id** |
-| Look | **Minimal light** (changed 2026-10-28): white, near-black text, one pink accent (#D6336C), thin grey lines, Plus Jakarta Sans font, simple outline icons. No real brand logos or designs. Real-money screens stay visibly different (dark band, lock icon). |
+| Look | **Two skins** (2026-10-29): **Butik** (plum + cream + gold, Bodoni Moda serif, sharp corners) and **Stiker** (pink + lime + hologram, Bricolage Grotesque, thick black outlines, sticker shadows). Picked on the first screen (/gaya, before the money questions); switch anytime in Pengaturan or with the ✦ button on Koleksi. Same screens and rules in both; only colours, fonts, shapes, decorations and a few words differ. Real-money and login screens (bayar, masuk) stay plain in both. No real brand logos or designs. Moodboard + mocks: design/moodboard.html, design/skins-mock.html. |
 | Free | 3 fake checkouts (including the sample item), balance and hutang included |
 | Paid | Unlimited checkouts, savings goal, total saved, monthly recap, online backup, push reminders |
 | Prices | **Weekly Rp10.000** (7 days, no auto-renew), **Yearly Rp119.000** (changed from Rp79.000 on 2026-10-16) |

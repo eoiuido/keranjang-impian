@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { Card, field, Header, Label, Notice, Page, PrimaryButton, TextButton } from '@/components/ui';
+import { Card, field, Header, Label, Notice, Page, PrimaryButton, TextButton, Display } from '@/components/ui';
 import { deleteEverything, getSessionToken } from '@/lib/account';
 import { ApiError } from '@/lib/api';
 import { colors, type } from '@/theme';
@@ -38,7 +38,7 @@ export default function Hapus() {
   return (
     <Page>
       <Header title="Hapus semua data" onBack={() => router.back()} />
-      <Text style={styles.title}>Yakin mau hapus semua?</Text>
+      <Display style={styles.title}>Yakin mau hapus semua?</Display>
       <Text style={styles.sub}>Ini tidak bisa dibatalkan.</Text>
 
       <Card style={{ marginTop: 20, gap: 8 }}>

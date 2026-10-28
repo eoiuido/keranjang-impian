@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { MoneySlider } from '@/components/MoneySlider';
 import { onboarding } from '@/components/onboarding';
-import { Card, Header, Label, Page, PrimaryButton, Steps } from '@/components/ui';
+import { Card, Header, Label, Page, PrimaryButton, Steps, Display } from '@/components/ui';
 import { rupiah } from '@/lib/format';
 import { completeOnboarding, draft } from '@/lib/profile';
 import { track } from '@/lib/track';
@@ -33,7 +33,7 @@ export default function Pengeluaran() {
     <Page>
       <Header onBack={() => router.back()} />
       <Steps current={2} total={2} />
-      <Text style={onboarding.title}>Pengeluaran rutin sebulan kira-kira?</Text>
+      <Display style={onboarding.title}>Pengeluaran rutin sebulan kira-kira?</Display>
       <Text style={onboarding.sub}>Makan, transport, kos, pulsa. Satu angka kasar aja.</Text>
 
       <View style={onboarding.slider}>
@@ -49,7 +49,7 @@ export default function Pengeluaran() {
 
       <Card style={styles.result}>
         <Label>Saldo impian bulan ini</Label>
-        <Text style={styles.resultAmount}>{rupiah(balance)}</Text>
+        <Display kind="money" style={styles.resultAmount}>{rupiah(balance)}</Display>
         <Text style={styles.resultHint}>
           {rupiah(money)} − {rupiah(expenses)}. Sisa saldo ikut ke bulan depan.
         </Text>

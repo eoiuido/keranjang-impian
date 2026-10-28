@@ -9,9 +9,9 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dist = join(root, 'dist');
 
-const next = readFileSync(join(dist, 'mulai.html'), 'utf8');
+const next = readFileSync(join(dist, 'gaya.html'), 'utf8');
 const scripts = [...next.matchAll(/<script[^>]+src="([^"]+)"/g)].map((m) => m[1]);
-if (scripts.length === 0) throw new Error('No app scripts found in dist/mulai.html');
+if (scripts.length === 0) throw new Error('No app scripts found in dist/gaya.html');
 
 const prefetch = scripts.map((src) => `<link rel="prefetch" href="${src}" as="script">`).join('\n');
 const page = readFileSync(join(root, 'landing', 'index.html'), 'utf8').replace('<!--PREFETCH-->', prefetch);
