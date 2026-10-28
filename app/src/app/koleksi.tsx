@@ -89,7 +89,25 @@ export default function Koleksi() {
               </Text>
             </Pressable>
           ) : (
-            <LinkRow icon="target" title="Pasang target tabungan" note="Misal laptop atau HP impian" onPress={() => router.push('/target')} />
+            <Pressable
+              onPress={() => router.push('/target')}
+              accessibilityRole="button"
+              style={({ pressed }) => [styles.goalCta, pressed && { opacity: 0.9 }]}
+            >
+              <View style={styles.goalCtaIcon}>
+                <Icon name="target" size={26} color={colors.white} strokeWidth={2} />
+              </View>
+              <Text style={styles.goalCtaTitle}>Mau dipakai buat apa?</Text>
+              <Text style={styles.goalCtaText}>
+                {saved > 0
+                  ? `${rupiah(saved)} yang kamu selamatkan bisa jadi laptop, HP, atau liburan impian.`
+                  : 'Pasang target, lalu lihat setiap checkout palsu mendekatkanmu ke barang yang berguna.'}
+              </Text>
+              <View style={styles.goalCtaBtn}>
+                <Text style={styles.goalCtaBtnText}>Pasang target tabungan</Text>
+                <Icon name="arrowRight" size={16} color={colors.white} strokeWidth={2.2} />
+              </View>
+            </Pressable>
           )}
           <LinkRow icon="calendar" title={`Rekap ${monthLabel(monthKey())}`} note="Kartu yang bisa kamu bagikan" onPress={() => router.push('/rekap')} />
         </>
@@ -160,6 +178,22 @@ function LinkRow({ icon, title, note, badge, onPress }: { icon: IconName; title:
 }
 
 const styles = StyleSheet.create({
+  goalCta: { marginTop: 20, backgroundColor: colors.accentSoft, borderRadius: radius.lg, padding: 18 },
+  goalCtaIcon: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' },
+  goalCtaTitle: { ...type.h2, marginTop: 14, color: colors.text },
+  goalCtaText: { ...type.body, marginTop: 4, color: colors.text },
+  goalCtaBtn: {
+    marginTop: 14,
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: colors.accent,
+    borderRadius: radius.pill,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  goalCtaBtnText: { fontSize: 14, fontWeight: '700', color: colors.white },
   goal: { marginTop: 20, borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, padding: 16, gap: 10 },
   goalTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   goalName: { ...type.body, fontWeight: '700', flex: 1, color: colors.text },
