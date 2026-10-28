@@ -2,9 +2,9 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { MoneySlider } from '@/components/MoneySlider';
-import { Page, PrimaryButton, Steps } from '@/components/ui';
+import { onboarding } from '@/components/onboarding';
+import { Header, Notice, Page, PrimaryButton, Steps } from '@/components/ui';
 import { draft } from '@/lib/profile';
-import { onboarding as styles } from '@/components/onboardingStyles';
 
 // S2. Onboarding 1: monthly money.
 export default function Mulai() {
@@ -18,29 +18,22 @@ export default function Mulai() {
 
   return (
     <Page>
+      <Header onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
       <Steps current={1} total={2} />
-      <Text style={styles.title}>Uang bulanan kamu berapa?</Text>
-      <Text style={styles.sub}>Uang saku atau gaji, kira-kira aja.</Text>
+      <Text style={onboarding.title}>Uang bulanan kamu berapa?</Text>
+      <Text style={onboarding.sub}>Uang saku atau gaji, kira-kira aja.</Text>
 
-      <View style={styles.why}>
-        <Text style={styles.whyText}>
-          Biar terasa nyata: kamu belanja pakai uangmu sendiri, bukan uang tak terbatas.
-        </Text>
+      <View style={{ marginTop: 20 }}>
+        <Notice icon="alert">Biar terasa nyata: kamu belanja pakai uangmu sendiri, bukan uang tak terbatas.</Notice>
       </View>
 
-      <View style={styles.slider}>
-        <MoneySlider
-          label="Uang bulanan"
-          value={money}
-          onChange={setMoney}
-          sliderMax={20_000_000}
-          max={100_000_000}
-        />
+      <View style={onboarding.slider}>
+        <MoneySlider label="Uang bulanan" value={money} onChange={setMoney} sliderMax={20_000_000} max={100_000_000} />
       </View>
 
-      <View style={styles.bottom}>
+      <View style={onboarding.bottom}>
         <PrimaryButton label="Lanjut" onPress={next} disabled={money <= 0} />
-        <Text style={styles.privacy}>Angka ini cuma disimpan di HP kamu.</Text>
+        <Text style={onboarding.privacy}>Angka ini cuma disimpan di HP kamu.</Text>
       </View>
     </Page>
   );

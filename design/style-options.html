@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spirit Belongings: pilihan gaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #E9E9EC; color: #111; padding: 28px 16px 48px; }
+  h1 { font-size: 22px; text-align: center; margin-bottom: 4px; }
+  .lead { text-align: center; color: #555; font-size: 14px; margin-bottom: 28px; }
+  .row { display: flex; gap: 28px; justify-content: center; flex-wrap: wrap; }
+  .col { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .label { font-weight: 800; font-size: 16px; }
+  .label small { display: block; font-weight: 500; color: #666; font-size: 12px; text-align: center; }
+  .pair { display: flex; gap: 14px; }
+  .phone { width: 260px; height: 540px; border-radius: 34px; padding: 22px 18px; overflow: hidden; position: relative;
+           box-shadow: 0 18px 40px rgba(0,0,0,.18); display: flex; flex-direction: column; }
+  .brand { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .photo { margin: 18px 0 16px; height: 170px; border-radius: 20px; display: flex; align-items: center; justify-content: center; }
+  .head { font-size: 26px; line-height: 1.12; font-weight: 800; letter-spacing: -.02em; }
+  .sub { font-size: 13px; margin-top: 8px; line-height: 1.45; }
+  .btn { margin-top: auto; border-radius: 14px; padding: 14px; text-align: center; font-weight: 700; font-size: 14px; }
+  .note { text-align: center; font-size: 11px; margin-top: 8px; }
+  .k { font-size: 11px; font-weight: 600; }
+  .big { font-size: 28px; font-weight: 800; letter-spacing: -.02em; margin-top: 2px; }
+  .card { border-radius: 18px; padding: 14px; margin-top: 14px; }
+  .line { display: flex; justify-content: space-between; font-size: 13px; padding: 9px 0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .tile { border-radius: 14px; padding: 8px; }
+  .tile .img { height: 62px; border-radius: 10px; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; }
+  .tile b { font-size: 11px; display: block; }
+  .tile span { font-size: 11px; }
+  .section { font-size: 14px; font-weight: 800; margin-top: 16px; }
+
+  /* A. Minimal light */
+  .a { background: #FFFFFF; color: #111114; }
+  .a .brand { color: #111114; } .a .sub, .a .note, .a .k { color: #6B6B73; }
+  .a .photo, .a .tile .img { background: #F4F4F6; }
+  .a .btn { background: #D6336C; color: #fff; }
+  .a .accent { color: #D6336C; }
+  .a .card { border: 1px solid #E7E7EB; } .a .line + .line { border-top: 1px solid #EFEFF2; }
+  .a .tile { border: 1px solid #E7E7EB; }
+
+  /* B. Dark premium */
+  .b { background: #0E0E11; color: #F5F5F7; }
+  .b .sub, .b .note, .b .k { color: #9A9AA3; }
+  .b .photo, .b .tile .img { background: #1B1B20; }
+  .b .btn { background: #F06595; color: #0E0E11; }
+  .b .accent { color: #F06595; }
+  .b .card { background: #17171C; } .b .line + .line { border-top: 1px solid #26262D; }
+  .b .tile { background: #17171C; }
+
+  /* C. Soft neutral */
+  .c { background: #F6F3EE; color: #2B2724; }
+  .c .sub, .c .note, .c .k { color: #847A72; }
+  .c .photo, .c .tile .img { background: #E9E3DA; }
+  .c .btn { background: #2B2724; color: #F6F3EE; }
+  .c .accent { color: #B5616F; }
+  .c .card { background: #EFE9E1; } .c .line + .line { border-top: 1px solid #E2DAD0; }
+  .c .tile { background: #EFE9E1; }
+
+  .icon { width: 64px; height: 64px; }
+  .tile .icon { width: 30px; height: 30px; }
+</style>
+</head>
+<body>
+  <h1>Spirit Belongings: pilih gaya</h1>
+  <p class="lead">Kiri: halaman depan (dari iklan). Kanan: halaman koleksi. Kotak abu-abu = nanti diganti foto tumbler asli.</p>
+
+  <div class="row">
+    <!-- template repeated for a / b / c -->
+    <div class="col">
+      <div class="label">A. Minimal light<small>putih · hitam · aksen pink</small></div>
+      <div class="pair">
+        <div class="phone a">
+          <div class="brand">Spirit Belongings</div>
+          <div class="photo"><svg class="icon" viewBox="0 0 64 64" fill="none" stroke="#B9B9C2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14h24l-2 6H22z"/><path d="M22 20l3 34a4 4 0 0 0 4 3.6h6a4 4 0 0 0 4-3.6l3-34"/><path d="M42 26h4a5 5 0 0 1 5 5v6a5 5 0 0 1-5 5h-2"/><path d="M36 14l3-8"/></svg></div>
+          <div class="head">Checkout palsu.<br>Dompet aman.</div>
+          <div class="sub">Beli barang impianmu tanpa keluar uang beneran.</div>
+          <div class="btn">Coba checkout palsu</div>
+          <div class="note">Gratis 3 kali. Tanpa daftar.</div>
+        </div>
+        <div class="phone a">
+          <div class="brand">Spirit Belongings</div>
+          <div class="k" style="margin-top:18px">Total uang yang kamu selamatkan</div>
+          <div class="big accent">Rp2.550.000</div>
+          <div class="card">
+            <div class="line"><span>Saldo bulan ini</span><b>Rp1.107.500</b></div>
+            <div class="line"><span>Sisa hutang</span><b>Rp0</b></div>
+          </div>
+          <div class="section">Koleksimu</div>
+          <div class="grid">
+            <div class="tile"><div class="img"><svg class="icon" viewBox="0 0 64 64" fill="none" stroke="#B9B9C2" stroke-width="3" stroke-linecap="round"><path d="M20 14h24l-2 6H22z"/><path d="M22 20l3 34a4 4 0 0 0 4 3.6h6a4 4 0 0 0 4-3.6l3-34"/></svg></div><b>Tumbler 1,2L</b><span>Rp850.000</span></div>
+            <div class="tile"><div class="img"><svg class="icon" viewBox="0 0 64 64" fill="none" stroke="#B9B9C2" stroke-width="3" stroke-linecap="round"><rect x="14" y="20" width="36" height="30" rx="4"/><path d="M24 20v-4a8 8 0 0 1 16 0v4"/></svg></div><b>Tas kanvas</b><span>Rp450.000</span></div>
+          </div>
+          <div class="btn">Checkout palsu baru</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="label">B. Dark premium<small>hitam · putih · aksen pink terang</small></div>
+      <div class="pair">
+        <div class="phone b">
+          <div class="brand">Spirit Belongings</div>
+          <div class="photo"><svg class="icon" viewBox="0 0 64 64" fill="none" stroke="#4A4A55" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14h24l-2 6H22z"/><path d="M22 20l3 34a4 4 0 0 0 4 3.6h6a4 4 0 0 0 4-3.6l3-34"/><path d="M42 26h4a5 5 0 0 1 5 5v6a5 5 0 0 1-5 5h-2"/><path d="M36 14l3-8"/></svg></div>
+          <div class="head">Checkout palsu.<br>Dompet aman.</div>
+          <div class="sub">Beli barang impianmu tanpa keluar uang beneran.</div>
+          <div class="btn">Coba checkout palsu</div>
+          <div class="note">Gratis 3 kali. Tanpa daftar.</div>
+        </div>
+        <div class="phone b">
+          <div class="brand">Spirit Belongings</div>
+          <div class="k" style="margin-top:18px">Total uang yang kamu selamatkan</div>
+          <div class="big accent">Rp2.550.000</div>
+          <div class="card">
+            <div class="line"><span>Saldo bulan ini</span><b>Rp1.107.500</b></div>
+            <div class="line"><span>Sisa hutang</span><b>Rp0</b></div>
+          </div>
+          <div class="section">Koleksimu</div>
+          <div class="grid">
+            <div class="tile"><div class="img"><svg class="icon" viewBox="0 0 64 64" fill="none" stroke="#4A4A55" stroke-width="3" stroke-linecap="round"><path d="M20 14h24l-2 6H22z"/><path d="M22 20l3 34a4 4 0 0 0 4 3.6h6a4 4 0 0 0 4-3.6l3-34"/></svg></div><b>Tumbler 1,2L</b><span>Rp850.000</span></div>
+            <div class="tile"><div class="img"><svg class="icon" viewBox="0 0 64 64" fill="none" stroke="#4A4A55" stroke-width="3" stroke-linecap="round"><rect x="14" y="20" width="36" height="30" rx="4"/><path d="M24 20v-4a8 8 0 0 1 16 0v4"/></svg></div><b>Tas kanvas</b><span>Rp450.000</span></div>
+          </div>
+          <div class="btn">Checkout palsu baru</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col">
+      <div class="label">C. Soft neutral<small>krem · abu batu · aksen rose lembut</small></div>
+      <div class="pair">
+        <div class="phone c">
+          <div class="brand">Spirit Belongings</div>
+          <div class="photo"><svg class="icon" viewBox="0 0 64 64" fill="none" stroke="#B3A99E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14h24l-2 6H22z"/><path d="M22 20l3 34a4 4 0 0 0 4 3.6h6a4 4 0 0 0 4-3.6l3-34"/><path d="M42 26h4a5 5 0 0 1 5 5v6a5 5 0 0 1-5 5h-2"/><path d="M36 14l3-8"/></svg></div>
+          <div class="head">Checkout palsu.<br>Dompet aman.</div>
+          <div class="sub">Beli barang impianmu tanpa keluar uang beneran.</div>
+          <div class="btn">Coba checkout palsu</div>
+          <div class="note">Gratis 3 kali. Tanpa daftar.</div>
+        </div>
+        <div class="phone c">
+          <div class="brand">Spirit Belongings</div>
+          <div class="k" style="margin-top:18px">Total uang yang kamu selamatkan</div>
+          <div class="big accent">Rp2.550.000</div>
+          <div class="card">
+            <div class="line"><span>Saldo bulan ini</span><b>Rp1.107.500</b></div>
+            <div class="line"><span>Sisa hutang</span><b>Rp0</b></div>
+          </div>
+          <div class="section">Koleksimu</div>
+          <div class="grid">
+            <div class="tile"><div class="img"><svg class="icon" viewBox="0 0 64 64" fill="none" stroke="#B3A99E" stroke-width="3" stroke-linecap="round"><path d="M20 14h24l-2 6H22z"/><path d="M22 20l3 34a4 4 0 0 0 4 3.6h6a4 4 0 0 0 4-3.6l3-34"/></svg></div><b>Tumbler 1,2L</b><span>Rp850.000</span></div>
+            <div class="tile"><div class="img"><svg class="icon" viewBox="0 0 64 64" fill="none" stroke="#B3A99E" stroke-width="3" stroke-linecap="round"><rect x="14" y="20" width="36" height="30" rx="4"/><path d="M24 20v-4a8 8 0 0 1 16 0v4"/></svg></div><b>Tas kanvas</b><span>Rp450.000</span></div>
+          </div>
+          <div class="btn">Checkout palsu baru</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

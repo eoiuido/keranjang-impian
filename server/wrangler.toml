@@ -1,11 +1,11 @@
-# Keranjang Impian: one Cloudflare Worker serves the web app (static files)
+# Spirit Belongings: one Cloudflare Worker serves the web app (static files)
 # and the server API under /api/*.
 name = "keranjang-impian"
 main = "src/index.ts"
 compatibility_date = "2026-10-01"
 
 # Online address of this app (EOI domain, one subdomain per app).
-routes = [{ pattern = "keranjang.eoi-apps.my.id", custom_domain = true }]
+routes = [{ pattern = "spirit-belongings.eoi-apps.my.id", custom_domain = true }]
 workers_dev = false # only the address above, no extra *.workers.dev copy
 preview_urls = false
 
@@ -27,7 +27,7 @@ crons = ["*/5 * * * *"]
 
 [vars]
 DOKU_BASE_URL = "https://api-sandbox.doku.com" # production: https://api.doku.com
-APP_URL = "https://keranjang.eoi-apps.my.id" # where DOKU sends the buyer back after paying
+APP_URL = "https://spirit-belongings.eoi-apps.my.id" # where DOKU sends the buyer back after paying
 # Local development overrides APP_URL and adds ALLOWED_ORIGIN in .dev.vars.
 
 # Secrets (never in this file): DOKU_CLIENT_ID, DOKU_SECRET_KEY.

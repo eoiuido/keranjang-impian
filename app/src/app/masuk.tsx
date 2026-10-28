@@ -1,14 +1,14 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Page, PrimaryButton } from '@/components/ui';
+import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { field, Header, Label, Notice, Page, PrimaryButton, TextButton } from '@/components/ui';
 import { ApiError, requestLoginCode, verifyLoginCode } from '@/lib/api';
 import { restoreBackup, syncBackup } from '@/lib/backup';
 import { saveAccess } from '@/lib/plan';
 import { getProfile } from '@/lib/profile';
 import { setItem } from '@/lib/store';
 import { track } from '@/lib/track';
-import { colors, radius } from '@/theme';
+import { colors, type } from '@/theme';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -77,13 +77,12 @@ export default function Masuk() {
   if (expiredAccess) {
     return (
       <Page>
+        <Header onBack={() => router.replace('/')} />
         <Text style={styles.title}>Akses kamu sudah habis</Text>
         <Text style={styles.sub}>Kamu sudah masuk, tapi paketmu sudah berakhir. Mau lanjut lagi?</Text>
         <View style={styles.bottom}>
           <PrimaryButton label="Lihat paket" onPress={() => router.replace('/paywall')} />
-          <Pressable onPress={() => router.replace('/')} accessibilityRole="button" style={styles.linkBtn}>
-            <Text style={styles.link}>Nanti saja</Text>
-          </Pressable>
+          <TextButton label="Nanti saja" onPress={() => router.replace('/')} />
         </View>
       </Page>
     );
@@ -91,14 +90,13 @@ export default function Masuk() {
 
   return (
     <Page>
-      <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} accessibilityRole="button">
-        <Text style={styles.back}>‹ Kembali</Text>
-      </Pressable>
+      <Header onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
       <Text style={styles.title}>Sudah bayar? Masuk</Text>
       <Text style={styles.sub}>Pakai email yang kamu pakai waktu bayar. Kami kirim kode 6 angka.</Text>
 
+      <Label style={styles.fieldLabel}>Email</Label>
       <TextInput
-        style={[styles.input, sent && styles.inputDone]}
+        style={field}
         value={email}
         onChangeText={(t) => {
           setEmail(t);
@@ -106,7 +104,7 @@ export default function Masuk() {
           setCode('');
         }}
         placeholder="nama@email.com"
-        placeholderTextColor={colors.textSoft}
+        placeholderTextColor={colors.textFaint}
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
@@ -116,15 +114,16 @@ export default function Masuk() {
 
       {sent && (
         <>
-          <Text style={styles.info}>
-            Kalau email ini pernah dipakai untuk bayar, kodenya sudah kami kirim. Cek juga folder spam. Berlaku 10 menit.
-          </Text>
+          <View style={{ marginTop: 16 }}>
+            <Notice icon="mail">Kalau email ini pernah dipakai untuk bayar, kodenya sudah kami kirim. Cek juga folder spam. Berlaku 10 menit.</Notice>
+          </View>
+          <Label style={styles.fieldLabel}>Kode 6 angka</Label>
           <TextInput
-            style={[styles.input, styles.code]}
+            style={[field, styles.code]}
             value={code}
-            onChangeText={(t) => setCode(t.replace(/\D/g, '').slice(0, 6))}
-            placeholder="______"
-            placeholderTextColor={colors.textSoft}
+            onChangeText={(t) => setCode(t.replace(/D/g, '').slice(0, 6))}
+            placeholder="000000"
+            placeholderTextColor={colors.line}
             keyboardType="number-pad"
             inputMode="numeric"
             autoComplete="one-time-code"
@@ -139,13 +138,11 @@ export default function Masuk() {
       <View style={styles.bottom}>
         {sent ? (
           <>
-            <PrimaryButton label="Masuk" onPress={verify} disabled={code.length !== 6 || busy} />
-            <Pressable onPress={send} accessibilityRole="button" style={styles.linkBtn} disabled={busy}>
-              <Text style={styles.link}>Kirim ulang kode</Text>
-            </Pressable>
+            <PrimaryButton label="Masuk" onPress={verify} disabled={code.length !== 6} busy={busy} />
+            <TextButton label="Kirim ulang kode" onPress={send} disabled={busy} />
           </>
         ) : (
-          <PrimaryButton label="Kirim kode" onPress={send} disabled={!EMAIL_RE.test(clean) || busy} />
+          <PrimaryButton label="Kirim kode" onPress={send} disabled={!EMAIL_RE.test(clean)} busy={busy} />
         )}
       </View>
     </Page>
@@ -153,24 +150,10 @@ export default function Masuk() {
 }
 
 const styles = StyleSheet.create({
-  back: { fontSize: 16, color: colors.textSoft, marginBottom: 12 },
-  title: { fontSize: 28, fontWeight: '800', color: colors.text },
-  sub: { marginTop: 6, marginBottom: 20, fontSize: 16, lineHeight: 22, color: colors.textSoft },
-  input: {
-    borderWidth: 2,
-    borderColor: colors.pink,
-    borderRadius: radius.sm,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 17,
-    color: colors.text,
-    backgroundColor: colors.card,
-  },
-  inputDone: { borderColor: colors.mint },
-  info: { marginTop: 14, marginBottom: 10, fontSize: 14, lineHeight: 20, color: colors.text },
+  title: { ...type.title, color: colors.text },
+  sub: { ...type.body, marginTop: 6, color: colors.textSoft },
+  fieldLabel: { marginTop: 24, marginBottom: 8 },
   code: { fontSize: 28, letterSpacing: 10, textAlign: 'center', fontWeight: '800' },
-  error: { marginTop: 12, fontSize: 14, color: colors.pinkDeep },
-  bottom: { marginTop: 'auto', paddingTop: 24, gap: 8 },
-  linkBtn: { alignSelf: 'center', padding: 10 },
-  link: { fontSize: 15, color: colors.textSoft, textDecorationLine: 'underline' },
+  error: { ...type.small, fontSize: 14, marginTop: 12, color: colors.warn },
+  bottom: { marginTop: 'auto', paddingTop: 28, gap: 8 },
 });

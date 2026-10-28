@@ -12,7 +12,7 @@ const parts = {
 };
 
 test('digest = base64(SHA-256(body))', async () => {
-  const body = '{"order":{"amount":79000,"invoice_number":"KI-1"}}';
+  const body = '{"order":{"amount":79000,"invoice_number":"SB-1"}}';
   assert.equal(await digest(body), createHash('sha256').update(body).digest('base64'));
 });
 
@@ -24,9 +24,9 @@ test('signature matches DOKU format, checked with Node crypto', async () => {
 });
 
 test('GET signature has no Digest line', async () => {
-  const text = `Client-Id:${parts.clientId}\nRequest-Id:${parts.requestId}\nRequest-Timestamp:${parts.timestamp}\nRequest-Target:/orders/v1/status/KI-1`;
+  const text = `Client-Id:${parts.clientId}\nRequest-Id:${parts.requestId}\nRequest-Timestamp:${parts.timestamp}\nRequest-Target:/orders/v1/status/SB-1`;
   const expected = 'HMACSHA256=' + createHmac('sha256', 'SK-test').update(text).digest('base64');
-  assert.equal(await signature('SK-test', { ...parts, target: '/orders/v1/status/KI-1' }), expected);
+  assert.equal(await signature('SK-test', { ...parts, target: '/orders/v1/status/SB-1' }), expected);
 });
 
 test('safeEqual', () => {

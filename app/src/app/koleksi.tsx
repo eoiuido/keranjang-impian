@@ -1,20 +1,23 @@
 import { Redirect, router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Icon } from '@/components/Icon';
 import { ItemPicture } from '@/components/ItemPicture';
-import { Page, PrimaryButton } from '@/components/ui';
+import { Brand, Card, Page, PrimaryButton, Row } from '@/components/ui';
 import { syncBackupIfDirty } from '@/lib/backup';
 import { getCheckoutCount, getItems, type SavedItem } from '@/lib/collection';
 import { rupiah } from '@/lib/format';
 import { type Access, FREE_CHECKOUTS, getAccess, getPendingOrder, type PendingOrder, PLANS } from '@/lib/plan';
 import { loadWallet, type Wallet } from '@/lib/profile';
-import { colors, maxWidth, radius } from '@/theme';
+import { colors, maxWidth, radius, type } from '@/theme';
 
 type Data = { wallet: Wallet; items: SavedItem[]; count: number; pending: PendingOrder | null; access: Access | null };
 
 const GAP = 12;
+const PAD = 20; // Page side padding
+const shortDate = (d: string) => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
 
-// S9. Home / collection: balance, debt, total saved and the items "bought".
+// S9. Home / collection: total saved, balance, debt and the items "bought".
 export default function Koleksi() {
   const [data, setData] = useState<Data | null | undefined>(undefined);
   const { width } = useWindowDimensions();
@@ -37,11 +40,11 @@ export default function Koleksi() {
   const paidActive = !!access && new Date(access.endsAt).getTime() > Date.now();
   const saved = items.reduce((sum, i) => sum + i.price, 0);
   const freeLeft = Math.max(0, FREE_CHECKOUTS - count);
-  const cardW = (Math.min(width, maxWidth) - 32 - GAP) / 2;
+  const cardW = (Math.min(width - PAD * 2, maxWidth) - GAP) / 2;
 
   return (
     <Page>
-      <Text style={styles.brand}>Keranjang Impian</Text>
+      <Brand />
 
       {pending && (
         <Pressable
@@ -49,49 +52,51 @@ export default function Koleksi() {
           accessibilityRole="button"
           onPress={() => router.push({ pathname: '/bayar', params: { order: pending.id } })}
         >
-          <Text style={styles.pendingText}>Ada pembayaran {rupiah(pending.amount)} yang belum selesai.</Text>
-          <Text style={styles.pendingLink}>Cek status ›</Text>
+          <Icon name="lock" size={18} color={colors.white} />
+          <Text style={styles.pendingText}>Pembayaran {rupiah(pending.amount)} belum selesai</Text>
+          <Icon name="arrowRight" size={18} color={colors.white} />
         </Pressable>
       )}
 
-      <View style={styles.savedCard}>
-        <Text style={styles.savedLabel}>Total uang yang kamu selamatkan</Text>
-        <Text style={styles.savedAmount}>{rupiah(saved)}</Text>
-        <Text style={styles.savedSub}>dari {items.length} barang yang gak jadi kamu beli beneran</Text>
-      </View>
+      <Text style={styles.savedLabel}>Total uang yang kamu selamatkan</Text>
+      <Text style={styles.savedAmount}>{rupiah(saved)}</Text>
+      <Text style={styles.savedSub}>dari {items.length} barang yang gak jadi kamu beli beneran</Text>
 
-      <View style={styles.stats}>
-        <Stat label="Saldo bulan ini" value={rupiah(wallet.balance)} color={colors.mint} />
-        {wallet.debt > 0 && <Stat label="Sisa hutang" value={rupiah(wallet.debt)} color={colors.butter} />}
-      </View>
+      <Card style={{ marginTop: 20, paddingVertical: 6 }}>
+        <Row first label="Saldo bulan ini" value={rupiah(wallet.balance)} />
+        <Row label="Sisa hutang" value={rupiah(wallet.debt)} />
+      </Card>
 
-      <PrimaryButton label="Checkout palsu baru" onPress={() => router.push('/barang')} />
-      <Text style={styles.free}>
-        {paidActive && access
-          ? `Paket ${PLANS[access.plan].name} aktif sampai ${new Date(access.endsAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}`
-          : freeLeft > 0
-            ? `Checkout gratis: ${freeLeft} dari ${FREE_CHECKOUTS} tersisa`
-            : 'Checkout gratis sudah habis'}
-      </Text>
+      <View style={{ marginTop: 20, gap: 10 }}>
+        <PrimaryButton label="Checkout palsu baru" icon="plus" onPress={() => router.push('/barang')} />
+        <Text style={styles.free}>
+          {paidActive && access
+            ? `Paket ${PLANS[access.plan].name} aktif sampai ${shortDate(access.endsAt)}`
+            : freeLeft > 0
+              ? `Checkout gratis: ${freeLeft} dari ${FREE_CHECKOUTS} tersisa`
+              : 'Checkout gratis sudah habis'}
+        </Text>
+      </View>
 
       <Text style={styles.section}>Koleksimu</Text>
       {items.length === 0 ? (
         <View style={styles.empty}>
-          <Text style={styles.emptyText}>Belum ada barang. Coba checkout tumbler contoh dulu!</Text>
+          <Icon name="bag" size={28} color={colors.textFaint} />
+          <Text style={styles.emptyText}>Belum ada barang. Coba checkout tumbler contoh dulu.</Text>
         </View>
       ) : (
         <View style={styles.grid}>
           {items.map((item) => (
-            <View key={item.id} style={[styles.item, { width: cardW }]}>
-              <ItemPicture item={item} size={cardW - 16} />
-              <Text style={styles.itemName} numberOfLines={2}>
+            <View key={item.id} style={{ width: cardW }}>
+              <ItemPicture item={item} size={cardW} />
+              <Text style={styles.itemName} numberOfLines={1}>
                 {item.name}
               </Text>
               <Text style={styles.itemPrice}>{rupiah(item.price)}</Text>
               <Text style={styles.itemDate}>
-                {new Date(item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+                {shortDate(item.date)}
+                {item.hutang > 0 ? ' · pakai hutang' : ''}
               </Text>
-              {item.hutang > 0 && <Text style={styles.tag}>pakai hutang</Text>}
             </View>
           ))}
         </View>
@@ -100,53 +105,27 @@ export default function Koleksi() {
   );
 }
 
-function Stat({ label, value, color }: { label: string; value: string; color: string }) {
-  return (
-    <View style={[styles.stat, { backgroundColor: color }]}>
-      <Text style={styles.statLabel}>{label}</Text>
-      <Text style={styles.statValue}>{value}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  pending: { marginTop: 12, backgroundColor: '#1F3A5F', borderRadius: radius.md, padding: 14 },
-  pendingText: { fontSize: 14, color: '#FFFFFF' },
-  pendingLink: { marginTop: 4, fontSize: 15, fontWeight: '700', color: '#FFFFFF' },
-  brand: { fontSize: 16, fontWeight: '700', color: colors.pinkDeep, textAlign: 'center' },
-  savedCard: {
+  pending: {
     marginTop: 16,
-    backgroundColor: colors.pink,
-    borderRadius: radius.lg,
-    padding: 20,
+    backgroundColor: colors.ink,
+    borderRadius: radius.md,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
   },
-  savedLabel: { fontSize: 15, color: colors.text },
-  savedAmount: { marginTop: 4, fontSize: 34, fontWeight: '900', color: colors.text },
-  savedSub: { marginTop: 2, fontSize: 13, color: colors.text, textAlign: 'center' },
-  stats: { flexDirection: 'row', gap: GAP, marginTop: GAP, marginBottom: 20 },
-  stat: { flex: 1, borderRadius: radius.md, padding: 14 },
-  statLabel: { fontSize: 13, color: colors.text },
-  statValue: { marginTop: 2, fontSize: 18, fontWeight: '800', color: colors.text },
-  free: { marginTop: 8, fontSize: 14, color: colors.textSoft, textAlign: 'center' },
-  section: { marginTop: 28, marginBottom: 12, fontSize: 20, fontWeight: '800', color: colors.text },
-  empty: { backgroundColor: colors.card, borderRadius: radius.md, padding: 20 },
-  emptyText: { fontSize: 15, color: colors.textSoft, textAlign: 'center' },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP },
-  item: { backgroundColor: colors.card, borderRadius: radius.md, padding: 8, gap: 2 },
-  itemName: { marginTop: 6, fontSize: 14, fontWeight: '600', color: colors.text },
-  itemPrice: { fontSize: 15, fontWeight: '800', color: colors.text },
-  itemDate: { fontSize: 12, color: colors.textSoft },
-  tag: {
-    alignSelf: 'flex-start',
-    marginTop: 4,
-    fontSize: 11,
-    fontWeight: '700',
-    color: colors.text,
-    backgroundColor: colors.butter,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: radius.pill,
-    overflow: 'hidden',
-  },
+  pendingText: { flex: 1, fontSize: 14, fontWeight: '600', color: colors.white },
+  savedLabel: { ...type.small, marginTop: 28, color: colors.textSoft },
+  savedAmount: { ...type.money, fontSize: 40, lineHeight: 48, marginTop: 2, color: colors.accent },
+  savedSub: { ...type.small, color: colors.textSoft },
+  free: { ...type.small, color: colors.textSoft, textAlign: 'center' },
+  section: { ...type.h2, marginTop: 32, marginBottom: 14, color: colors.text },
+  empty: { borderWidth: 1, borderColor: colors.line, borderStyle: 'dashed', borderRadius: radius.lg, padding: 24, alignItems: 'center', gap: 10 },
+  emptyText: { ...type.body, color: colors.textSoft, textAlign: 'center' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: GAP, rowGap: 20 },
+  itemName: { ...type.body, fontSize: 14, fontWeight: '600', marginTop: 8, color: colors.text },
+  itemPrice: { fontSize: 14, fontWeight: '800', color: colors.text },
+  itemDate: { ...type.small, fontSize: 12, color: colors.textFaint },
 });

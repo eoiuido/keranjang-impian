@@ -1,4 +1,4 @@
-# later.md: Keranjang Impian ideas for after version 1
+# later.md: Spirit Belongings ideas for after version 1
 
 - Ramadan / Harbolnas push reminders
 - "Monthly recap ready" push on the 1st

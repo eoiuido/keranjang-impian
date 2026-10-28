@@ -2,9 +2,10 @@ import { Redirect, router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { FakeQR } from '@/components/FakeQR';
+import { Icon, type IconName } from '@/components/Icon';
 import { ItemPicture } from '@/components/ItemPicture';
 import { ScanAnimation } from '@/components/ScanAnimation';
-import { Page, PrimaryButton, SecondaryButton } from '@/components/ui';
+import { Card, field, Header, Label, Notice, Page, PrimaryButton, Row, SecondaryButton } from '@/components/ui';
 import { syncBackup } from '@/lib/backup';
 import { cart } from '@/lib/cart';
 import { completeCheckout, getAddress, saveAddress } from '@/lib/collection';
@@ -13,18 +14,27 @@ import { payoffPlan, withInterest } from '@/lib/money';
 import { needsPaywall } from '@/lib/plan';
 import { getProfile, loadWallet } from '@/lib/profile';
 import { track } from '@/lib/track';
-import { colors, radius } from '@/theme';
+import { colors, radius, type } from '@/theme';
 
 type Stage = 'cart' | 'hutang' | 'pay' | 'qris' | 'scan' | 'processing';
 
-// Generic payment names with our own simple icons; no real company names or logos.
-const METHODS = [
-  { id: 'QRIS', icon: '▦', note: 'Scan pakai aplikasi apa aja' },
-  { id: 'E-wallet', icon: '◍', note: 'Dompet digital' },
-  { id: 'Transfer bank', icon: '⌂', note: 'Virtual account' },
-  { id: 'Kartu kredit', icon: '▭', note: 'Visa / Mastercard' },
-  { id: 'COD', icon: '◫', note: 'Bayar di tempat' },
+// Generic payment names with our own outline icons; no real company names or logos.
+const METHODS: { id: string; icon: IconName; note: string }[] = [
+  { id: 'QRIS', icon: 'qr', note: 'Scan pakai aplikasi apa aja' },
+  { id: 'E-wallet', icon: 'wallet', note: 'Dompet digital' },
+  { id: 'Transfer bank', icon: 'bank', note: 'Virtual account' },
+  { id: 'Kartu kredit', icon: 'card', note: 'Visa / Mastercard' },
+  { id: 'COD', icon: 'truck', note: 'Bayar di tempat' },
 ];
+
+const TITLES: Record<Stage, string> = {
+  cart: 'Keranjang',
+  hutang: 'Hutang',
+  pay: 'Pembayaran',
+  qris: 'Bayar',
+  scan: 'Bayar',
+  processing: 'Bayar',
+};
 
 const MIN_ADDRESS = 10;
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -81,79 +91,64 @@ export default function Checkout() {
     router.replace('/berhasil');
   };
 
+  const busy = stage === 'scan' || stage === 'processing';
+
   return (
     <View style={{ flex: 1 }}>
       {/* key: each stage starts scrolled to the top */}
-      <Page key={stage === 'scan' || stage === 'processing' ? 'qris' : stage}>
-        <View style={styles.header}>
-          <Pressable onPress={back} accessibilityRole="button" accessibilityLabel="Kembali" hitSlop={12}>
-            <Text style={styles.back}>‹ Kembali</Text>
-          </Pressable>
-          <Text style={styles.headerTitle}>
-            {stage === 'cart'
-              ? 'Keranjang'
-              : stage === 'hutang'
-                ? 'Hutang'
-                : stage === 'pay'
-                  ? 'Pilih pembayaran'
-                  : 'Pembayaran'}
-          </Text>
-          <View style={{ width: 70 }} />
-        </View>
+      <Page key={busy ? 'qris' : stage}>
+        <Header title={TITLES[stage]} onBack={busy ? undefined : back} />
 
         {stage === 'cart' && (
           <>
-            <View style={styles.card}>
-              <View style={styles.itemRow}>
-                <ItemPicture item={item} size={72} />
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.itemName} numberOfLines={2}>
-                    {item.name}
-                  </Text>
-                  <Text style={styles.itemPrice}>{rupiah(item.price)}</Text>
-                </View>
+            <View style={styles.itemRow}>
+              <ItemPicture item={item} size={76} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.itemName} numberOfLines={2}>
+                  {item.name}
+                </Text>
+                <Text style={styles.itemPrice}>{rupiah(item.price)}</Text>
               </View>
             </View>
 
-            <Text style={styles.label}>Alamat pengiriman</Text>
+            <Label style={styles.label}>Alamat pengiriman</Label>
             <TextInput
-              style={styles.address}
+              style={[field, styles.address]}
               multiline
               placeholder="Provinsi, kota, kecamatan, jalan, nomor rumah"
-              placeholderTextColor={colors.textSoft}
+              placeholderTextColor={colors.textFaint}
               value={address}
               onChangeText={setAddress}
               maxLength={300}
               accessibilityLabel="Alamat pengiriman"
             />
-            <Text style={styles.hint}>Cuma disimpan di HP kamu. Gak dikirim ke mana pun.</Text>
-
-            <View style={styles.card}>
-              <Row label="Subtotal" value={rupiah(item.price)} />
-              <Row label="Ongkir" value="Gratis" />
-              <View style={styles.divider} />
-              <Row label="Total" value={rupiah(item.price)} bold />
+            <View style={styles.hintRow}>
+              <Icon name="lock" size={14} color={colors.textSoft} />
+              <Text style={styles.hint}>Cuma disimpan di HP kamu. Gak dikirim ke mana pun.</Text>
             </View>
 
-            {balance !== null &&
-              (short > 0 ? (
-                <View style={[styles.balanceBox, { backgroundColor: colors.butter }]}>
-                  <Text style={styles.balanceText}>
+            <Card style={{ marginTop: 20, paddingVertical: 6 }}>
+              <Row first label="Subtotal" value={rupiah(item.price)} />
+              <Row label="Ongkir" value="Gratis" />
+              <Row label="Total" value={rupiah(item.price)} strong />
+            </Card>
+
+            {balance !== null && (
+              <View style={{ marginTop: 14 }}>
+                {short > 0 ? (
+                  <Notice tone="warn" icon="alert">
                     Saldo kamu kurang {rupiah(short)}. Kalau beli beneran, kamu bakal minus.
-                  </Text>
-                </View>
-              ) : (
-                <View style={[styles.balanceBox, { backgroundColor: colors.mint }]}>
-                  <Text style={styles.balanceText}>
-                    Saldo kamu: {rupiah(balance)} → {rupiah(balance - item.price)}
-                  </Text>
-                </View>
-              ))}
+                  </Notice>
+                ) : (
+                  <Notice icon="wallet">
+                    Saldo kamu {rupiah(balance)} → {rupiah(balance - item.price)}
+                  </Notice>
+                )}
+              </View>
+            )}
 
             <View style={styles.bottom}>
-              {short > 0 && addressOk && (
-                <SecondaryButton label={`Pakai Hutang ${rupiah(short)}`} onPress={() => toPayment(true)} />
-              )}
+              {short > 0 && addressOk && <SecondaryButton label={`Pakai hutang ${rupiah(short)}`} onPress={() => toPayment(true)} />}
               <PrimaryButton
                 label={addressOk ? (short > 0 ? 'Tetap checkout' : 'Pilih pembayaran') : 'Isi alamat dulu'}
                 onPress={() => toPayment(false)}
@@ -167,8 +162,8 @@ export default function Checkout() {
 
         {stage === 'pay' && (
           <>
-            <View style={styles.methods}>
-              {METHODS.map((m) => {
+            <Card style={{ paddingVertical: 4, paddingHorizontal: 0 }}>
+              {METHODS.map((m, i) => {
                 const on = m.id === method;
                 return (
                   <Pressable
@@ -176,87 +171,76 @@ export default function Checkout() {
                     onPress={() => setMethod(m.id)}
                     accessibilityRole="radio"
                     accessibilityState={{ checked: on }}
-                    style={[styles.method, on && styles.methodOn]}
+                    style={[styles.method, i > 0 && styles.methodLine]}
                   >
-                    <Text style={styles.methodIcon}>{m.icon}</Text>
+                    <View style={styles.methodIcon}>
+                      <Icon name={m.icon} size={20} />
+                    </View>
                     <View style={{ flex: 1 }}>
                       <Text style={styles.methodName}>{m.id}</Text>
                       <Text style={styles.methodNote}>{m.note}</Text>
                     </View>
-                    <View style={[styles.radio, on && styles.radioOn]} />
+                    <View style={[styles.radio, on && styles.radioOn]}>{on && <View style={styles.radioDot} />}</View>
                   </Pressable>
                 );
               })}
-            </View>
+            </Card>
             <View style={styles.bottom}>
-              <PrimaryButton label={`Bayar sekarang · ${rupiah(item.price)}`} onPress={() => setStage('qris')} />
+              <PrimaryButton label={`Bayar ${rupiah(item.price)}`} onPress={() => setStage('qris')} />
             </View>
           </>
         )}
 
-        {(stage === 'qris' || stage === 'scan' || stage === 'processing') && (
+        {(stage === 'qris' || busy) && (
           <View style={styles.qrisWrap}>
             <Text style={styles.qrisMethod}>{method}</Text>
-            <FakeQR size={220} />
+            <FakeQR size={210} />
             <Text style={styles.strike}>{rupiah(item.price)}</Text>
-            <Text style={styles.youPay}>Kamu bayar: Rp0</Text>
+            <Text style={styles.youPay}>Kamu bayar Rp0</Text>
             <View style={styles.bottomFull}>
-              <PrimaryButton label="Scan & Bayar" onPress={scanAndPay} disabled={stage !== 'qris'} />
+              <PrimaryButton label="Scan & bayar" icon="qr" onPress={scanAndPay} disabled={stage !== 'qris'} />
             </View>
           </View>
         )}
 
         <Text style={styles.disclaimer}>
-          Simulasi. Tidak terhubung dengan toko, bank, atau penyedia pembayaran mana pun. Tidak ada uang yang
-          terpotong.
+          Simulasi. Tidak terhubung dengan toko, bank, atau penyedia pembayaran mana pun. Tidak ada uang yang terpotong.
         </Text>
       </Page>
 
-      {(stage === 'scan' || stage === 'processing') && <ScanAnimation processing={stage === 'processing'} />}
+      {busy && <ScanAnimation processing={stage === 'processing'} />}
     </View>
   );
 }
 
 // S5b. Fake paylater: show the true cost before they agree.
-function HutangInfo({
-  amount,
-  existing,
-  monthly,
-  onYes,
-  onNo,
-}: {
-  amount: number;
-  existing: number;
-  monthly: number;
-  onYes: () => void;
-  onNo: () => void;
-}) {
+function HutangInfo({ amount, existing, monthly, onYes, onNo }: { amount: number; existing: number; monthly: number; onYes: () => void; onNo: () => void }) {
   const total = existing + amount;
   const next = withInterest(total);
   const plan = payoffPlan(total, monthly);
   return (
     <>
-      <View style={[styles.card, styles.hutangCard]}>
-        <Text style={styles.hutangLabel}>Hutang baru</Text>
-        <Text style={styles.hutangAmount}>{rupiah(amount)}</Text>
-        {existing > 0 && <Text style={styles.hutangText}>Total hutangmu jadi {rupiah(total)}.</Text>}
-        <Text style={styles.hutangText}>
-          Bulan depan dipotong {rupiah(next)} dari saldomu (bunga 5%/bulan). Kalau belum lunas, sisanya kena 5% lagi.
-        </Text>
-      </View>
+      <Label>Hutang baru</Label>
+      <Text style={styles.hutangAmount}>{rupiah(amount)}</Text>
+      {existing > 0 && <Text style={styles.hutangText}>Total hutangmu jadi {rupiah(total)}.</Text>}
 
-      <View style={[styles.balanceBox, { backgroundColor: plan && plan.months <= 12 ? colors.lavender : colors.butter }]}>
-        <Text style={styles.balanceText}>
+      <Card style={{ marginTop: 18, paddingVertical: 6 }}>
+        <Row first label="Bunga" value="5% / bulan" />
+        <Row label="Dipotong bulan depan" value={rupiah(next)} />
+        <Row label="Perkiraan lunas" value={plan ? `${plan.months} bulan` : 'Tidak pernah'} />
+        {plan && <Row label="Total yang kamu bayar" value={rupiah(plan.totalPaid)} strong />}
+      </Card>
+
+      <View style={{ marginTop: 14, gap: 10 }}>
+        <Notice tone={plan && plan.months <= 12 ? 'info' : 'warn'} icon="alert">
           {plan
-            ? `Perkiraan lunas: ${plan.months} bulan. Total yang kamu bayar: ${rupiah(plan.totalPaid)}.`
+            ? plan.months > 12
+              ? 'Ini butuh lebih dari 12 bulan buat lunas. Kalau belum lunas, sisanya kena 5% lagi tiap bulan.'
+              : 'Kalau belum lunas, sisanya kena 5% lagi tiap bulan.'
             : `Dengan saldo bulanan ${rupiah(monthly)}, hutang ini gak akan pernah lunas.`}
-        </Text>
-        {plan && plan.months > 12 && (
-          <Text style={[styles.balanceText, styles.warn]}>Ini butuh lebih dari 12 bulan buat lunas.</Text>
-        )}
+        </Notice>
+        <Text style={styles.sim}>Simulasi. Bukan pinjaman beneran.</Text>
       </View>
-
-      <Text style={styles.sim}>Simulasi. Bukan pinjaman beneran.</Text>
 
       <View style={styles.bottom}>
         <SecondaryButton label="Gak jadi" onPress={onNo} />
@@ -266,80 +250,30 @@ function HutangInfo({
   );
 }
 
-function Row({ label, value, bold }: { label: string; value: string; bold?: boolean }) {
-  return (
-    <View style={styles.row}>
-      <Text style={[styles.rowText, bold && styles.bold]}>{label}</Text>
-      <Text style={[styles.rowText, bold && styles.bold]}>{value}</Text>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
-  back: { width: 70, fontSize: 16, color: colors.textSoft },
-  headerTitle: { fontSize: 18, fontWeight: '800', color: colors.text },
-  card: { backgroundColor: colors.card, borderRadius: radius.md, padding: 16, gap: 8 },
   itemRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  itemName: { fontSize: 16, fontWeight: '600', color: colors.text },
-  itemPrice: { marginTop: 2, fontSize: 18, fontWeight: '800', color: colors.text },
-  label: { marginTop: 20, marginBottom: 8, fontSize: 15, fontWeight: '700', color: colors.text },
-  address: {
-    minHeight: 90,
-    borderWidth: 2,
-    borderColor: colors.pink,
-    borderRadius: radius.sm,
-    padding: 12,
-    fontSize: 16,
-    color: colors.text,
-    backgroundColor: colors.card,
-    textAlignVertical: 'top',
-  },
-  hint: { marginTop: 6, marginBottom: 20, fontSize: 13, color: colors.textSoft },
-  row: { flexDirection: 'row', justifyContent: 'space-between' },
-  rowText: { fontSize: 15, color: colors.text },
-  bold: { fontSize: 17, fontWeight: '800' },
-  divider: { height: 1, backgroundColor: colors.pink },
-  balanceBox: { marginTop: 16, borderRadius: radius.md, padding: 14 },
-  balanceText: { fontSize: 15, lineHeight: 21, color: colors.text, textAlign: 'center' },
-  bottom: { marginTop: 'auto', paddingTop: 24, gap: 10 },
-  hutangCard: { alignItems: 'center', backgroundColor: colors.card },
-  hutangLabel: { fontSize: 15, color: colors.textSoft },
-  hutangAmount: { fontSize: 34, fontWeight: '900', color: colors.pinkDeep },
-  hutangText: { fontSize: 15, lineHeight: 21, color: colors.text, textAlign: 'center' },
-  warn: { marginTop: 6, fontWeight: '700' },
-  sim: { marginTop: 16, fontSize: 14, fontWeight: '700', color: colors.textSoft, textAlign: 'center' },
+  itemName: { ...type.body, fontWeight: '600', color: colors.text },
+  itemPrice: { ...type.h2, marginTop: 2, color: colors.text },
+  label: { marginTop: 24, marginBottom: 8 },
+  address: { minHeight: 92, textAlignVertical: 'top' },
+  hintRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 8 },
+  hint: { ...type.small, color: colors.textSoft, flex: 1 },
+  bottom: { marginTop: 'auto', paddingTop: 28, gap: 10 },
   bottomFull: { alignSelf: 'stretch', marginTop: 24 },
-  methods: { gap: 10 },
-  method: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 14,
-    backgroundColor: colors.card,
-    borderRadius: radius.md,
-    padding: 16,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  methodOn: { borderColor: colors.pinkDeep },
-  methodIcon: {
-    width: 40,
-    height: 40,
-    lineHeight: 40,
-    textAlign: 'center',
-    fontSize: 22,
-    borderRadius: 12,
-    backgroundColor: colors.lavender,
-    color: colors.text,
-    overflow: 'hidden',
-  },
-  methodName: { fontSize: 16, fontWeight: '700', color: colors.text },
-  methodNote: { fontSize: 13, color: colors.textSoft },
-  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: colors.pink },
-  radioOn: { borderWidth: 7, borderColor: colors.pinkDeep },
-  qrisWrap: { alignItems: 'center' },
-  qrisMethod: { marginBottom: 12, fontSize: 15, fontWeight: '700', color: colors.textSoft },
-  strike: { marginTop: 16, fontSize: 18, color: colors.textSoft, textDecorationLine: 'line-through' },
-  youPay: { marginTop: 2, fontSize: 28, fontWeight: '800', color: colors.text },
-  disclaimer: { marginTop: 20, fontSize: 12, lineHeight: 17, color: colors.textSoft, textAlign: 'center' },
+  method: { flexDirection: 'row', alignItems: 'center', gap: 14, paddingHorizontal: 16, paddingVertical: 14 },
+  methodLine: { borderTopWidth: 1, borderTopColor: colors.line },
+  methodIcon: { width: 40, height: 40, borderRadius: radius.sm, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
+  methodName: { fontSize: 15, fontWeight: '700', color: colors.text },
+  methodNote: { ...type.small, color: colors.textSoft },
+  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  radioOn: { borderColor: colors.accent },
+  radioDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.accent },
+  qrisWrap: { alignItems: 'center', paddingTop: 8 },
+  qrisMethod: { ...type.label, color: colors.textSoft, textTransform: 'uppercase', marginBottom: 14 },
+  strike: { ...type.body, marginTop: 18, color: colors.textFaint, textDecorationLine: 'line-through' },
+  youPay: { ...type.money, fontSize: 28, marginTop: 2, color: colors.text },
+  hutangAmount: { ...type.money, fontSize: 36, lineHeight: 44, marginTop: 6, color: colors.text },
+  hutangText: { ...type.body, color: colors.textSoft },
+  sim: { ...type.small, fontWeight: '600', color: colors.textSoft, textAlign: 'center' },
+  disclaimer: { ...type.small, fontSize: 12, marginTop: 24, color: colors.textFaint, textAlign: 'center' },
 });

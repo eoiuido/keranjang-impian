@@ -60,8 +60,8 @@ export async function requestCode(req: Request, env: Env): Promise<Response> {
   await sendEmail(
     env,
     email,
-    `Kode masuk Keranjang Impian: ${code}`,
-    `Kode masuk kamu: ${code}\n\nBerlaku ${CODE_MINUTES} menit. Jangan bagikan kode ini ke siapa pun.\nKalau kamu tidak minta kode ini, abaikan email ini.\n\nKeranjang Impian by EOI · eoi.uido@gmail.com`,
+    `Kode masuk Spirit Belongings: ${code}`,
+    `Kode masuk kamu: ${code}\n\nBerlaku ${CODE_MINUTES} menit. Jangan bagikan kode ini ke siapa pun.\nKalau kamu tidak minta kode ini, abaikan email ini.\n\nSpirit Belongings by EOI · eoi.uido@gmail.com`,
   );
   // Only for the automated local test; never set online.
   return json(env.DEV_RETURN_CODE === '1' ? { ok: true, devCode: code } : { ok: true });

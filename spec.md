@@ -1,4 +1,4 @@
-# spec.md: Keranjang Impian (EOI app #2)
+# spec.md: Spirit Belongings (EOI app #2, formerly "Keranjang Impian")
 
 Status: **APPROVED by the owner on 2026-10-13.**
 Brief: `Downloads\EOI\Markdown app\Spirit Belongings.md` (working name "Spirit Belongings").
@@ -10,8 +10,8 @@ Number format everywhere: Indonesian (Rp79.000, 35,5%).
 
 | Topic | Decision |
 |---|---|
-| Name | **Keranjang Impian** |
-| Look | Cute pastel, our own icons, no real brand logos or designs |
+| Name | **Spirit Belongings** (renamed from Keranjang Impian on 2026-10-28). Address: **spirit-belongings.eoi-apps.my.id** |
+| Look | **Minimal light** (changed 2026-10-28): white, near-black text, one pink accent (#D6336C), thin grey lines, Plus Jakarta Sans font, simple outline icons. No real brand logos or designs. Real-money screens stay visibly different (dark band, lock icon). |
 | Free | 3 fake checkouts (including the sample item), balance and hutang included |
 | Paid | Unlimited checkouts, savings goal, total saved, monthly recap, online backup, push reminders |
 | Prices | **Weekly Rp10.000** (7 days, no auto-renew), **Yearly Rp119.000** (changed from Rp79.000 on 2026-10-16) |

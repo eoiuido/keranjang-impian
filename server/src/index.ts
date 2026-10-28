@@ -52,7 +52,7 @@ async function createOrder(req: Request, env: Env): Promise<Response> {
   if (reuse?.payment_url) return json(publicOrder(reuse));
 
   const now = new Date();
-  const id = `KI-${iso(now).slice(0, 10).replace(/-/g, '')}-${randomHex(16)}`;
+  const id = `SB-${iso(now).slice(0, 10).replace(/-/g, '')}-${randomHex(16)}`;
   const expiresAt = iso(new Date(now.getTime() + PAY_MINUTES * 60_000));
 
   let url: string;

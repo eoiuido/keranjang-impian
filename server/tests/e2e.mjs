@@ -123,7 +123,7 @@ try {
     assert.equal(r.status, 200, JSON.stringify(r.body));
     yearly = r.body;
     assert.equal(yearly.amount, 119_000);
-    assert.match(yearly.paymentUrl, /\/pay\/KI-/);
+    assert.match(yearly.paymentUrl, /\/pay\/SB-/);
     const sent = mock.created.at(-1);
     assert.equal(sent.order.amount, 119_000);
     assert.equal(sent.customer.email, email);

@@ -1,32 +1,24 @@
 import { Image, StyleSheet, View } from 'react-native';
 import type { CartItem } from '@/lib/cart';
+import { categoryIcon } from '@/lib/categories';
 import { colors, radius } from '@/theme';
-import { Tumbler } from './Tumbler';
+import { Icon } from './Icon';
 
-// The item's photo, the sample tumbler, or a pastel shopping-bag placeholder.
+// The item's photo, or its category's outline icon on a light grey square.
 export function ItemPicture({ item, size }: { item: CartItem; size: number }) {
-  const box = { width: size, height: size, borderRadius: radius.md };
+  const box = { width: size, height: size, borderRadius: size > 120 ? radius.lg : radius.md };
   if (item.photo) {
     return <Image source={{ uri: item.photo }} style={[box, styles.photo]} accessibilityLabel={item.name} />;
   }
-  if (item.sample) {
-    return (
-      <View style={[box, styles.frame, { backgroundColor: colors.butter }]}>
-        <Tumbler size={size / 230} />
-      </View>
-    );
-  }
+  const category = item.category ?? (item.sample ? 'tumbler' : 'other');
   return (
-    <View style={[box, styles.frame, { backgroundColor: colors.lavender }]} accessibilityLabel="Gambar barang">
-      <View style={[styles.handle, { width: size * 0.22, height: size * 0.16, borderWidth: size * 0.03 }]} />
-      <View style={[styles.bag, { width: size * 0.42, height: size * 0.36, borderRadius: size * 0.05 }]} />
+    <View style={[box, styles.frame]} accessibilityLabel={item.name}>
+      <Icon name={categoryIcon(category)} size={Math.round(size * 0.42)} color={colors.textFaint} strokeWidth={size > 120 ? 1.3 : 1.6} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  photo: { backgroundColor: colors.card },
-  frame: { alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
-  bag: { backgroundColor: colors.pink },
-  handle: { borderColor: colors.pinkDeep, borderBottomWidth: 0, borderTopLeftRadius: 99, borderTopRightRadius: 99 },
+  photo: { backgroundColor: colors.surface },
+  frame: { alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface },
 });

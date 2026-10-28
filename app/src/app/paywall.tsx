@@ -1,15 +1,16 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
-import { Page, PrimaryButton, SecondaryButton } from '@/components/ui';
+import { Icon } from '@/components/Icon';
+import { Header, Label, Page, PrimaryButton, SecondaryButton, TextButton } from '@/components/ui';
 import { rupiah } from '@/lib/format';
 import { declineOfferSeen, markDeclineOfferSeen, perWeek, PLANS, type PlanId } from '@/lib/plan';
 import { track } from '@/lib/track';
-import { colors, radius } from '@/theme';
+import { colors, radius, type } from '@/theme';
 
 const BENEFITS = [
   'Checkout palsu tanpa batas',
-  'Target tabungan (misal: laptop impian)',
+  'Target tabungan, misal laptop impian',
   'Total uang yang kamu selamatkan',
   'Rekap bulanan yang bisa kamu share',
   'Backup online, aman kalau ganti HP',
@@ -48,27 +49,21 @@ export default function Paywall() {
     const y = PLANS.yearly;
     return (
       <Page>
-        <View style={styles.offerTop}>
-          <Text style={styles.offerWait}>Tunggu!</Text>
-          <Text style={styles.offerTitle}>
-            Tahunan cuma <Text style={styles.offerPrice}>{rupiah(y.offerPrice)}</Text>
-          </Text>
-          <Text style={styles.offerStrike}>{rupiah(y.price)}</Text>
-          <Text style={styles.offerSub}>
-            Hemat {rupiah(y.price - y.offerPrice)}, cuma {rupiah(perWeek(y.offerPrice))}/minggu. Penawaran ini cuma muncul
-            sekali.
-          </Text>
+        <Header />
+        <View style={styles.offerBadge}>
+          <Text style={styles.offerBadgeText}>Penawaran sekali saja</Text>
         </View>
+        <Text style={styles.title}>Tahunan cuma {rupiah(y.offerPrice)}</Text>
+        <View style={styles.offerPriceRow}>
+          <Text style={styles.strike}>{rupiah(y.price)}</Text>
+          <Text style={styles.save}>Hemat {rupiah(y.price - y.offerPrice)}</Text>
+        </View>
+        <Text style={styles.sub}>Cuma {rupiah(perWeek(y.offerPrice))} per minggu. Penawaran ini tidak muncul lagi.</Text>
         <Benefits />
         <View style={styles.bottom}>
-          <PrimaryButton label={`Ambil ${rupiah(y.offerPrice)} / 1 tahun`} onPress={() => pay('yearly', true)} />
-          <SecondaryButton
-            label={`Mingguan ${rupiah(PLANS.weekly.price)} / 7 hari`}
-            onPress={() => pay('weekly', false)}
-          />
-          <Pressable onPress={later} accessibilityRole="button" style={styles.later}>
-            <Text style={styles.laterText}>Nanti saja</Text>
-          </Pressable>
+          <PrimaryButton label={`Ambil ${rupiah(y.offerPrice)} / tahun`} onPress={() => pay('yearly', true)} />
+          <SecondaryButton label={`Mingguan ${rupiah(PLANS.weekly.price)} / 7 hari`} onPress={() => pay('weekly', false)} />
+          <TextButton label="Nanti saja" onPress={later} />
           <Footer />
         </View>
       </Page>
@@ -78,8 +73,9 @@ export default function Paywall() {
   const price = PLANS[plan].price;
   return (
     <Page>
+      <Header onBack={() => router.back()} />
       <Text style={styles.title}>Lanjut checkout palsu tanpa batas</Text>
-      <Text style={styles.sub}>3 checkout gratismu sudah terpakai. Keren, uangmu tetap aman!</Text>
+      <Text style={styles.sub}>3 checkout gratismu sudah terpakai. Uangmu tetap aman.</Text>
       <Benefits />
 
       <View style={styles.plans}>
@@ -87,24 +83,24 @@ export default function Paywall() {
           on={plan === 'yearly'}
           onPress={() => setPlan('yearly')}
           name={PLANS.yearly.name}
-          price={`${rupiah(PLANS.yearly.price)} / ${PLANS.yearly.period}`}
-          note="Bayar sekali untuk setahun."
-          badge={`Paling hemat: cuma ${rupiah(perWeek(PLANS.yearly.price))}/minggu`}
+          price={rupiah(PLANS.yearly.price)}
+          period="/ tahun"
+          note={`Cuma ${rupiah(perWeek(PLANS.yearly.price))} per minggu. Bayar sekali.`}
+          badge="Paling hemat"
         />
         <PlanCard
           on={plan === 'weekly'}
           onPress={() => setPlan('weekly')}
           name={PLANS.weekly.name}
-          price={`${rupiah(PLANS.weekly.price)} / ${PLANS.weekly.period}`}
+          price={rupiah(PLANS.weekly.price)}
+          period="/ 7 hari"
           note="Gak otomatis diperpanjang. Bayar lagi kalau mau lanjut."
         />
       </View>
 
       <View style={styles.bottom}>
         <PrimaryButton label={`Lanjut bayar ${rupiah(price)}`} onPress={() => pay(plan, false)} />
-        <Pressable onPress={later} accessibilityRole="button" style={styles.later}>
-          <Text style={styles.laterText}>Nanti saja</Text>
-        </Pressable>
+        <TextButton label="Nanti saja" onPress={later} />
         <Footer />
       </View>
     </Page>
@@ -116,7 +112,7 @@ function Benefits() {
     <View style={styles.benefits}>
       {BENEFITS.map((b) => (
         <View key={b} style={styles.benefit}>
-          <Text style={styles.check}>✓</Text>
+          <Icon name="check" size={18} color={colors.accent} strokeWidth={2.2} />
           <Text style={styles.benefitText}>{b}</Text>
         </View>
       ))}
@@ -124,7 +120,7 @@ function Benefits() {
   );
 }
 
-function PlanCard(p: { on: boolean; onPress: () => void; name: string; price: string; note: string; badge?: string }) {
+function PlanCard(p: { on: boolean; onPress: () => void; name: string; price: string; period: string; note: string; badge?: string }) {
   return (
     <Pressable
       onPress={p.onPress}
@@ -132,15 +128,20 @@ function PlanCard(p: { on: boolean; onPress: () => void; name: string; price: st
       accessibilityState={{ checked: p.on }}
       style={[styles.plan, p.on && styles.planOn]}
     >
-      {p.badge && <Text style={styles.badge}>{p.badge}</Text>}
-      <View style={styles.planRow}>
-        <View style={{ flex: 1 }}>
-          <Text style={styles.planName}>{p.name}</Text>
-          <Text style={styles.planPrice}>{p.price}</Text>
-          <Text style={styles.planNote}>{p.note}</Text>
-        </View>
-        <View style={[styles.radio, p.on && styles.radioOn]} />
+      <View style={styles.planTop}>
+        <Label>{p.name}</Label>
+        {p.badge && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{p.badge}</Text>
+          </View>
+        )}
+        <View style={{ flex: 1 }} />
+        <View style={[styles.radio, p.on && styles.radioOn]}>{p.on && <View style={styles.radioDot} />}</View>
       </View>
+      <Text style={styles.planPrice}>
+        {p.price} <Text style={styles.planPeriod}>{p.period}</Text>
+      </Text>
+      <Text style={styles.planNote}>{p.note}</Text>
     </Pressable>
   );
 }
@@ -148,7 +149,7 @@ function PlanCard(p: { on: boolean; onPress: () => void; name: string; price: st
 function Footer() {
   return (
     <View style={styles.footer}>
-      <Text style={styles.footerText}>Bayar pakai QRIS. Tidak ada tagihan otomatis.</Text>
+      <Text style={styles.footerText}>Bayar pakai QRIS atau e-wallet. Tidak ada tagihan otomatis.</Text>
       <Text style={styles.footerText}>
         Bantuan:{' '}
         <Text style={styles.footerLink} onPress={() => Linking.openURL(`mailto:${HELP_EMAIL}`)}>
@@ -164,43 +165,30 @@ function Footer() {
 }
 
 const styles = StyleSheet.create({
-  title: { fontSize: 28, lineHeight: 34, fontWeight: '800', color: colors.text },
-  sub: { marginTop: 6, fontSize: 16, lineHeight: 22, color: colors.textSoft },
-  benefits: { marginTop: 18, gap: 8 },
+  title: { ...type.title, color: colors.text },
+  sub: { ...type.body, marginTop: 8, color: colors.textSoft },
+  benefits: { marginTop: 22, gap: 10 },
   benefit: { flexDirection: 'row', gap: 10, alignItems: 'flex-start' },
-  check: { fontSize: 16, fontWeight: '900', color: colors.pinkDeep, width: 18 },
-  benefitText: { flex: 1, fontSize: 15, lineHeight: 21, color: colors.text },
-  plans: { marginTop: 20, gap: 12 },
-  plan: { backgroundColor: colors.card, borderRadius: radius.md, padding: 16, borderWidth: 2, borderColor: colors.pink },
-  planOn: { borderColor: colors.pinkDeep, backgroundColor: '#FFF0F6' },
-  badge: {
-    alignSelf: 'flex-start',
-    marginBottom: 8,
-    fontSize: 12,
-    fontWeight: '800',
-    color: colors.text,
-    backgroundColor: colors.mint,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
-    borderRadius: radius.pill,
-    overflow: 'hidden',
-  },
-  planRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  planName: { fontSize: 15, fontWeight: '700', color: colors.textSoft },
-  planPrice: { marginTop: 2, fontSize: 20, fontWeight: '800', color: colors.text },
-  planNote: { marginTop: 2, fontSize: 13, color: colors.textSoft },
-  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: colors.pink },
-  radioOn: { borderWidth: 7, borderColor: colors.pinkDeep },
-  bottom: { marginTop: 'auto', paddingTop: 24, gap: 10 },
-  later: { alignSelf: 'center', padding: 10 },
-  laterText: { fontSize: 15, color: colors.textSoft, textDecorationLine: 'underline' },
-  footer: { gap: 4, alignItems: 'center' },
-  footerText: { fontSize: 12, color: colors.textSoft, textAlign: 'center' },
-  footerLink: { textDecorationLine: 'underline', color: colors.text },
-  offerTop: { alignItems: 'center', paddingTop: 12 },
-  offerWait: { fontSize: 20, fontWeight: '800', color: colors.pinkDeep },
-  offerTitle: { marginTop: 6, fontSize: 26, fontWeight: '800', color: colors.text, textAlign: 'center' },
-  offerPrice: { color: colors.pinkDeep },
-  offerStrike: { marginTop: 4, fontSize: 18, color: colors.textSoft, textDecorationLine: 'line-through' },
-  offerSub: { marginTop: 8, fontSize: 15, lineHeight: 21, color: colors.text, textAlign: 'center' },
+  benefitText: { ...type.body, flex: 1, color: colors.text },
+  plans: { marginTop: 24, gap: 10 },
+  plan: { borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, padding: 16 },
+  planOn: { borderColor: colors.accent, borderWidth: 2, padding: 15 },
+  planTop: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  badge: { backgroundColor: colors.accentSoft, borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 3 },
+  badgeText: { fontSize: 11, fontWeight: '700', color: colors.accent },
+  planPrice: { ...type.money, fontSize: 26, lineHeight: 32, marginTop: 8, color: colors.text },
+  planPeriod: { fontSize: 14, fontWeight: '600', color: colors.textSoft },
+  planNote: { ...type.small, marginTop: 4, color: colors.textSoft },
+  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 1.5, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' },
+  radioOn: { borderColor: colors.accent },
+  radioDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: colors.accent },
+  bottom: { marginTop: 'auto', paddingTop: 28, gap: 8 },
+  footer: { gap: 4, alignItems: 'center', marginTop: 4 },
+  footerText: { ...type.small, fontSize: 12, color: colors.textSoft, textAlign: 'center' },
+  footerLink: { color: colors.text, textDecorationLine: 'underline' },
+  offerBadge: { alignSelf: 'flex-start', backgroundColor: colors.accentSoft, borderRadius: radius.pill, paddingHorizontal: 10, paddingVertical: 4, marginBottom: 12 },
+  offerBadgeText: { fontSize: 12, fontWeight: '700', color: colors.accent },
+  offerPriceRow: { flexDirection: 'row', alignItems: 'center', gap: 10, marginTop: 6 },
+  strike: { ...type.body, color: colors.textFaint, textDecorationLine: 'line-through' },
+  save: { fontSize: 14, fontWeight: '700', color: colors.accent },
 });

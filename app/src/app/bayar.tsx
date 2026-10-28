@@ -1,21 +1,20 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Linking, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Page, PrimaryButton, SecondaryButton } from '@/components/ui';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Linking, Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Icon } from '@/components/Icon';
+import { SuccessMark } from '@/components/SuccessMark';
+import { Card, field, Header, Label, Notice, Page, PrimaryButton, Row, SecondaryButton, TextButton } from '@/components/ui';
 import { ApiError, createOrder, getOrder, type OrderInfo } from '@/lib/api';
 import { restoreBackup, syncBackup } from '@/lib/backup';
 import { rupiah } from '@/lib/format';
 import { PLANS, type PlanId, saveAccess, setPendingOrder } from '@/lib/plan';
 import { getItem, setItem } from '@/lib/store';
 import { track } from '@/lib/track';
-import { colors, radius } from '@/theme';
+import { colors, radius, type } from '@/theme';
 
 const HELP = 'eoi.uido@gmail.com';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const POLL_MS = 3_000;
-
-// Real money screens look different from the pastel fake checkout on purpose.
-const REAL = { bg: '#F4F6FA', band: '#1F3A5F', text: '#14213D', soft: '#5B6475', line: '#D5DBE5' };
 
 const ERRORS: Record<string, string> = {
   invalid_email: 'Email-nya belum benar. Cek lagi ya.',
@@ -23,10 +22,17 @@ const ERRORS: Record<string, string> = {
   offline: 'Butuh internet. Cek koneksimu lalu coba lagi.',
 };
 
+const longDate = (d: string) => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+
 // S11 email + S12 "Pembayaran ASLI" (before DOKU), and the screens after DOKU sends the buyer back.
+// Real-money screens use dark buttons and a lock band, never the pink of the fake checkout.
 export default function Bayar() {
   const params = useLocalSearchParams<{ plan?: string; offer?: string; order?: string }>();
-  return params.order ? <Confirm orderId={params.order} /> : <Start plan={params.plan === 'weekly' ? 'weekly' : 'yearly'} offer={params.offer === '1'} />;
+  return params.order ? (
+    <Confirm orderId={params.order} />
+  ) : (
+    <Start plan={params.plan === 'weekly' ? 'weekly' : 'yearly'} offer={params.offer === '1'} />
+  );
 }
 
 function Start({ plan, offer }: { plan: PlanId; offer: boolean }) {
@@ -35,7 +41,8 @@ function Start({ plan, offer }: { plan: PlanId; offer: boolean }) {
   const [email, setEmail] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const valid = EMAIL_RE.test(email.trim());
+  const clean = email.trim().toLowerCase();
+  const valid = EMAIL_RE.test(clean);
 
   useEffect(() => {
     getItem<string>('payEmail').then((e) => e && setEmail(e));
@@ -44,7 +51,6 @@ function Start({ plan, offer }: { plan: PlanId; offer: boolean }) {
   const pay = async () => {
     setBusy(true);
     setError('');
-    const clean = email.trim().toLowerCase();
     try {
       const o = await createOrder(clean, plan, offer);
       await setItem('payEmail', clean);
@@ -61,48 +67,37 @@ function Start({ plan, offer }: { plan: PlanId; offer: boolean }) {
   };
 
   return (
-    <RealPage>
-      <Text style={s.title}>
-        {p.name}: {rupiah(shownPrice)} / {p.period}
+    <RealPage onBack={() => router.back()}>
+      <Label>Paket {p.name}</Label>
+      <Text style={s.price}>
+        {rupiah(shownPrice)} <Text style={s.period}>/ {p.period}</Text>
       </Text>
       <Text style={s.sub}>Dibayar sekali. Tidak diperpanjang otomatis.</Text>
 
-      <Text style={s.label}>Email kamu</Text>
+      <Label style={s.fieldLabel}>Email kamu</Label>
       <TextInput
-        style={s.input}
+        style={field}
         value={email}
         onChangeText={setEmail}
         placeholder="nama@email.com"
-        placeholderTextColor={REAL.soft}
+        placeholderTextColor={colors.textFaint}
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"
         inputMode="email"
         accessibilityLabel="Email"
       />
-      <Text style={s.hint}>
-        {valid ? `Pastikan benar: ${email.trim().toLowerCase()}` : 'Buat simpan akses & backup, dan masuk lagi kalau ganti HP.'}
-      </Text>
+      <Text style={s.hint}>{valid ? `Pastikan benar: ${clean}` : 'Buat simpan akses & backup, dan masuk lagi kalau ganti HP.'}</Text>
 
-      <View style={s.box}>
-        <Text style={s.boxText}>Kamu akan dibawa ke halaman pembayaran DOKU (QRIS & e-wallet).</Text>
-        <Text style={s.boxText}>Setelah bayar, kamu otomatis kembali ke sini.</Text>
+      <View style={{ marginTop: 20 }}>
+        <Notice icon="lock">Kamu akan dibawa ke halaman pembayaran DOKU (QRIS & e-wallet). Setelah bayar, kamu otomatis kembali ke sini.</Notice>
       </View>
 
       {!!error && <Text style={s.error}>{error}</Text>}
 
       <View style={s.bottom}>
-        <Pressable
-          onPress={pay}
-          disabled={!valid || busy}
-          accessibilityRole="button"
-          style={({ pressed }) => [s.payBtn, pressed && { opacity: 0.85 }, (!valid || busy) && { opacity: 0.4 }]}
-        >
-          {busy ? <ActivityIndicator color="#FFFFFF" /> : <Text style={s.payText}>Bayar {rupiah(shownPrice)}</Text>}
-        </Pressable>
-        <Pressable onPress={() => router.back()} accessibilityRole="button" style={s.cancel}>
-          <Text style={s.cancelText}>Batal</Text>
-        </Pressable>
+        <PrimaryButton tone="ink" icon="lock" label={`Bayar ${rupiah(shownPrice)}`} onPress={pay} disabled={!valid} busy={busy} />
+        <TextButton label="Batal" onPress={() => router.back()} />
         <Help />
       </View>
     </RealPage>
@@ -152,17 +147,18 @@ function Confirm({ orderId }: { orderId: string }) {
   }, [orderId]);
 
   if (order?.status === 'paid') {
-    const until = order.endsAt
-      ? new Date(order.endsAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-      : '';
     return (
       <Page>
-        <View style={s.thanks}>
+        <View style={s.center}>
+          <SuccessMark />
           <Text style={s.thanksBig}>Terima kasih!</Text>
-          <Text style={s.thanksText}>Pembayaran {rupiah(order.amount)} berhasil.</Text>
-          <Text style={s.thanksText}>Akses aktif sampai {until}.</Text>
-          <Text style={s.thanksSmall}>Akses tersimpan di email {order.email}.</Text>
+          <Text style={s.thanksText}>Paket {PLANS[order.plan].name} kamu sudah aktif.</Text>
         </View>
+        <Card style={{ marginTop: 28, paddingVertical: 6 }}>
+          <Row first label="Dibayar" value={rupiah(order.amount)} />
+          <Row label="Aktif sampai" value={order.endsAt ? longDate(order.endsAt) : '-'} />
+          <Row label="Email" value={order.email ?? '-'} />
+        </Card>
         <View style={s.bottom}>
           <PrimaryButton label="Lanjut checkout palsu" onPress={() => router.replace('/barang')} />
           <SecondaryButton label="Lihat koleksi" onPress={() => router.replace('/koleksi')} />
@@ -177,12 +173,8 @@ function Confirm({ orderId }: { orderId: string }) {
         <Text style={s.title}>Waktu bayar habis</Text>
         <Text style={s.sub}>Belum ada pembayaran yang masuk, jadi tidak ada uang yang terpotong.</Text>
         <View style={s.bottom}>
-          <Pressable onPress={() => router.replace({ pathname: '/bayar', params: { plan: order.plan } })} style={s.payBtn} accessibilityRole="button">
-            <Text style={s.payText}>Coba lagi</Text>
-          </Pressable>
-          <Pressable onPress={() => router.replace('/koleksi')} accessibilityRole="button" style={s.cancel}>
-            <Text style={s.cancelText}>Nanti saja</Text>
-          </Pressable>
+          <PrimaryButton tone="ink" label="Coba lagi" onPress={() => router.replace({ pathname: '/bayar', params: { plan: order.plan } })} />
+          <TextButton label="Nanti saja" onPress={() => router.replace('/koleksi')} />
           <Help />
         </View>
       </RealPage>
@@ -194,8 +186,8 @@ function Confirm({ orderId }: { orderId: string }) {
       <RealPage>
         <Text style={s.title}>Pembayaranmu sedang kami cek</Text>
         <Text style={s.sub}>
-          Jumlah yang masuk berbeda dengan harga. Kami akan cek dan menghubungimu lewat email dalam 2 hari kerja. Kalau
-          perlu, uangmu dikembalikan.
+          Jumlah yang masuk berbeda dengan harga. Kami akan cek dan menghubungimu lewat email dalam 2 hari kerja. Kalau perlu, uangmu
+          dikembalikan.
         </Text>
         <View style={s.bottom}>
           <Help />
@@ -206,39 +198,38 @@ function Confirm({ orderId }: { orderId: string }) {
 
   return (
     <RealPage>
-      <View style={s.waiting}>
-        <ActivityIndicator size="large" color={REAL.band} />
+      <View style={s.center}>
+        <ActivityIndicator size="large" color={colors.ink} />
         <Text style={s.title}>Menunggu konfirmasi…</Text>
-        <Text style={s.sub}>
+        <Text style={[s.sub, { textAlign: 'center' }]}>
           {offline ? 'Koneksi terputus. Kami coba lagi otomatis.' : 'Biasanya cuma beberapa detik setelah kamu bayar.'}
         </Text>
       </View>
       {waitedLong && order?.paymentUrl && (
-        <View style={s.box}>
-          <Text style={s.boxText}>Belum bayar? Halaman pembayaranmu masih bisa dibuka.</Text>
-          <Pressable onPress={() => order.paymentUrl && Linking.openURL(order.paymentUrl)} accessibilityRole="button">
-            <Text style={s.link}>Buka halaman pembayaran</Text>
-          </Pressable>
-          <Text style={[s.boxText, { marginTop: 8 }]}>Sudah bayar tapi belum aktif? Tunggu sebentar, kami cek otomatis.</Text>
+        <View style={{ marginTop: 24, gap: 10 }}>
+          <Notice icon="alert">Belum bayar? Halaman pembayaranmu masih bisa dibuka. Sudah bayar? Tunggu sebentar, kami cek otomatis.</Notice>
+          <SecondaryButton label="Buka halaman pembayaran" onPress={() => order.paymentUrl && Linking.openURL(order.paymentUrl)} />
         </View>
       )}
       <View style={s.bottom}>
-        <Pressable onPress={() => router.replace('/koleksi')} accessibilityRole="button" style={s.cancel}>
-          <Text style={s.cancelText}>Kembali ke koleksi</Text>
-        </Pressable>
+        <TextButton label="Kembali ke koleksi" onPress={() => router.replace('/koleksi')} />
         <Help />
       </View>
     </RealPage>
   );
 }
 
-function RealPage({ children }: { children: React.ReactNode }) {
+function RealPage({ children, onBack }: { children: ReactNode; onBack?: () => void }) {
   return (
-    <View style={{ flex: 1, backgroundColor: REAL.bg }}>
+    <View style={{ flex: 1, backgroundColor: colors.bg }}>
       <View style={s.band}>
-        <Text style={s.bandText}>🔒 Pembayaran ASLI · uang beneran</Text>
+        <Icon name="lock" size={14} color={colors.white} strokeWidth={2} />
+        <Text style={s.bandText}>Pembayaran ASLI · uang beneran</Text>
       </View>
-      <Page bg={REAL.bg}>{children}</Page>
+      <Page>
+        <Header onBack={onBack} />
+        {children}
+      </Page>
     </View>
   );
 }
@@ -259,36 +250,19 @@ function Help() {
 }
 
 const s = StyleSheet.create({
-  band: { backgroundColor: REAL.band, paddingVertical: 10, alignItems: 'center' },
-  bandText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
-  title: { marginTop: 8, fontSize: 24, fontWeight: '800', color: REAL.text },
-  sub: { marginTop: 6, fontSize: 15, lineHeight: 21, color: REAL.soft },
-  label: { marginTop: 24, marginBottom: 8, fontSize: 15, fontWeight: '700', color: REAL.text },
-  input: {
-    borderWidth: 2,
-    borderColor: REAL.line,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 17,
-    color: REAL.text,
-    backgroundColor: '#FFFFFF',
-  },
-  hint: { marginTop: 6, fontSize: 13, color: REAL.soft },
-  box: { marginTop: 20, backgroundColor: '#FFFFFF', borderRadius: 10, borderWidth: 1, borderColor: REAL.line, padding: 14, gap: 4 },
-  boxText: { fontSize: 14, lineHeight: 20, color: REAL.text },
-  link: { marginTop: 6, fontSize: 15, fontWeight: '700', color: REAL.band, textDecorationLine: 'underline' },
-  error: { marginTop: 14, fontSize: 14, color: '#B42318' },
-  bottom: { marginTop: 'auto', paddingTop: 24, gap: 8 },
-  payBtn: { backgroundColor: REAL.band, borderRadius: radius.pill, paddingVertical: 18, alignItems: 'center' },
-  payText: { color: '#FFFFFF', fontSize: 18, fontWeight: '700' },
-  cancel: { alignSelf: 'center', padding: 10 },
-  cancelText: { fontSize: 15, color: REAL.soft, textDecorationLine: 'underline' },
-  help: { fontSize: 12, color: REAL.soft, textAlign: 'center' },
-  helpLink: { color: REAL.text, textDecorationLine: 'underline' },
-  waiting: { alignItems: 'center', paddingTop: 40, gap: 8 },
-  thanks: { alignItems: 'center', paddingTop: 40, gap: 6 },
-  thanksBig: { fontSize: 32, fontWeight: '900', color: colors.pinkDeep },
-  thanksText: { fontSize: 17, color: colors.text, textAlign: 'center' },
-  thanksSmall: { marginTop: 6, fontSize: 13, color: colors.textSoft, textAlign: 'center' },
+  band: { backgroundColor: colors.ink, paddingVertical: 9, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6 },
+  bandText: { color: colors.white, fontSize: 13, fontWeight: '700' },
+  price: { ...type.money, marginTop: 6, color: colors.text },
+  period: { fontSize: 15, fontWeight: '600', color: colors.textSoft },
+  title: { ...type.title, fontSize: 24, marginTop: 8, color: colors.text },
+  sub: { ...type.body, marginTop: 6, color: colors.textSoft },
+  fieldLabel: { marginTop: 28, marginBottom: 8 },
+  hint: { ...type.small, marginTop: 8, color: colors.textSoft },
+  error: { ...type.small, fontSize: 14, marginTop: 14, color: colors.warn },
+  bottom: { marginTop: 'auto', paddingTop: 28, gap: 8 },
+  help: { ...type.small, fontSize: 12, color: colors.textSoft, textAlign: 'center' },
+  helpLink: { color: colors.text, textDecorationLine: 'underline' },
+  center: { alignItems: 'center', paddingTop: 36, gap: 10 },
+  thanksBig: { ...type.title, marginTop: 8, color: colors.text },
+  thanksText: { ...type.body, color: colors.textSoft, textAlign: 'center' },
 });

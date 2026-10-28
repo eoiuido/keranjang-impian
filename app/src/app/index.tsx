@@ -1,81 +1,86 @@
 import { Link, router } from 'expo-router';
 import Head from 'expo-router/head';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Tumbler } from '@/components/Tumbler';
-import { PrimaryButton } from '@/components/ui';
+import { StyleSheet, Text, View } from 'react-native';
+import { Icon } from '@/components/Icon';
+import { Brand, Page, PrimaryButton } from '@/components/ui';
 import { getCheckoutCount } from '@/lib/collection';
 import { getProfile } from '@/lib/profile';
 import { track } from '@/lib/track';
-import { colors, maxWidth } from '@/theme';
+import { colors, radius, type } from '@/theme';
 
 // S1. Landing: keeps the ad's promise with one headline and one button.
 export default function Landing() {
+  const start = async () => {
+    track('start_tapped');
+    // Returning on this phone: skip what they already did.
+    const [profile, count] = await Promise.all([getProfile(), getCheckoutCount()]);
+    router.push(count > 0 ? '/koleksi' : profile ? '/barang' : '/mulai');
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.page}>
+    <Page>
       <Head>
-        <title>Keranjang Impian: Checkout palsu. Dompet aman.</title>
+        <title>Spirit Belongings: Checkout palsu. Dompet aman.</title>
       </Head>
-      <View style={styles.column}>
-        <Text style={styles.brand}>Keranjang Impian</Text>
+      <Brand />
 
-        <View style={styles.hero}>
-          <View style={styles.blob} />
-          <Tumbler size={1.1} />
-        </View>
-
-        <Text style={styles.headline} role="heading">
-          Checkout palsu.{'\n'}Dompet aman.
-        </Text>
-        <Text style={styles.sub}>Beli barang impianmu tanpa keluar uang beneran.</Text>
-
-        <View style={styles.cta}>
-          <PrimaryButton
-            label="Coba checkout palsu"
-            onPress={async () => {
-              track('start_tapped');
-              // Returning on this phone: skip what they already did.
-              const [profile, count] = await Promise.all([getProfile(), getCheckoutCount()]);
-              router.push(count > 0 ? '/koleksi' : profile ? '/barang' : '/mulai');
-            }}
-          />
-        </View>
-        <Text style={styles.note}>Gratis 3 kali. Tanpa daftar.</Text>
-
-        <View style={styles.footer}>
-          <Link href="/masuk" style={styles.footerLink}>
-            Sudah bayar? Masuk
-          </Link>
-          <Text style={styles.footerSmall}>Keranjang Impian by EOI · Privasi · Ketentuan · eoi.uido@gmail.com</Text>
+      <View style={styles.hero}>
+        <Icon name="tumbler" size={96} color={colors.textFaint} strokeWidth={1.1} />
+        <View style={styles.chip}>
+          <Icon name="checkCircle" size={16} color={colors.accent} strokeWidth={2} />
+          <Text style={styles.chipText}>Rp850.000 diselamatkan</Text>
         </View>
       </View>
-    </ScrollView>
+
+      <Text style={styles.headline} role="heading">
+        Checkout palsu.{'\n'}Dompet aman.
+      </Text>
+      <Text style={styles.sub}>Beli barang impianmu tanpa keluar uang beneran, dan lihat tabunganmu bertambah.</Text>
+
+      <View style={styles.cta}>
+        <PrimaryButton label="Coba checkout palsu" onPress={start} />
+        <Text style={styles.note}>Gratis 3 kali · Tanpa daftar</Text>
+      </View>
+
+      <View style={styles.footer}>
+        <Link href="/masuk" style={styles.footerLink}>
+          Sudah bayar? Masuk
+        </Link>
+        <Text style={styles.footerSmall}>Spirit Belongings by EOI · Privasi · Ketentuan · eoi.uido@gmail.com</Text>
+      </View>
+    </Page>
   );
 }
 
 const styles = StyleSheet.create({
-  page: { flexGrow: 1, alignItems: 'center', backgroundColor: colors.bg, paddingHorizontal: 16 },
-  column: { width: '100%', maxWidth, flexGrow: 1, alignItems: 'center', paddingTop: 20, paddingBottom: 24 },
-  brand: { fontSize: 16, fontWeight: '700', color: colors.pinkDeep, letterSpacing: 0.5 },
-  hero: { marginTop: 24, width: 220, height: 220, alignItems: 'center', justifyContent: 'center' },
-  blob: {
+  hero: {
+    marginTop: 20,
+    height: 260,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chip: {
     position: 'absolute',
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    backgroundColor: colors.butter,
+    bottom: 16,
+    left: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: colors.white,
+    borderRadius: radius.pill,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderWidth: 1,
+    borderColor: colors.line,
   },
-  headline: {
-    marginTop: 28,
-    fontSize: 36,
-    lineHeight: 42,
-    fontWeight: '800',
-    color: colors.text,
-    textAlign: 'center',
-  },
-  sub: { marginTop: 12, fontSize: 17, lineHeight: 24, color: colors.textSoft, textAlign: 'center' },
-  cta: { marginTop: 32, alignSelf: 'stretch' },
-  note: { marginTop: 10, fontSize: 14, color: colors.textSoft },
-  footer: { marginTop: 'auto', paddingTop: 32, alignItems: 'center', gap: 8 },
-  footerLink: { fontSize: 15, color: colors.text, textDecorationLine: 'underline' },
-  footerSmall: { fontSize: 12, color: colors.textSoft },
+  chipText: { fontSize: 13, fontWeight: '700', color: colors.text },
+  headline: { ...type.hero, marginTop: 28, color: colors.text },
+  sub: { ...type.body, fontSize: 16, lineHeight: 24, marginTop: 10, color: colors.textSoft },
+  cta: { marginTop: 28, gap: 10 },
+  note: { ...type.small, color: colors.textSoft, textAlign: 'center' },
+  footer: { marginTop: 'auto', paddingTop: 36, alignItems: 'center', gap: 8 },
+  footerLink: { fontSize: 14, fontWeight: '600', color: colors.text, textDecorationLine: 'underline' },
+  footerSmall: { ...type.small, fontSize: 12, color: colors.textFaint, textAlign: 'center' },
 });

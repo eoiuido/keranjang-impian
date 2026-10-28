@@ -2,12 +2,12 @@ import { Redirect, router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { MoneySlider } from '@/components/MoneySlider';
-import { Page, PrimaryButton, Steps } from '@/components/ui';
+import { onboarding } from '@/components/onboarding';
+import { Card, Header, Label, Page, PrimaryButton, Steps } from '@/components/ui';
 import { rupiah } from '@/lib/format';
 import { completeOnboarding, draft } from '@/lib/profile';
 import { track } from '@/lib/track';
-import { colors, radius } from '@/theme';
-import { onboarding as shared } from '@/components/onboardingStyles';
+import { colors, type } from '@/theme';
 
 // S3. Onboarding 2: monthly expenses, then this month's dream balance.
 export default function Pengeluaran() {
@@ -31,11 +31,12 @@ export default function Pengeluaran() {
 
   return (
     <Page>
+      <Header onBack={() => router.back()} />
       <Steps current={2} total={2} />
-      <Text style={shared.title}>Pengeluaran rutin sebulan kira-kira?</Text>
-      <Text style={shared.sub}>Makan, transport, kos, pulsa. Satu angka kasar aja.</Text>
+      <Text style={onboarding.title}>Pengeluaran rutin sebulan kira-kira?</Text>
+      <Text style={onboarding.sub}>Makan, transport, kos, pulsa. Satu angka kasar aja.</Text>
 
-      <View style={shared.slider}>
+      <View style={onboarding.slider}>
         <MoneySlider
           label="Pengeluaran rutin sebulan"
           value={expenses}
@@ -46,32 +47,25 @@ export default function Pengeluaran() {
         {atLimit && <Text style={styles.limit}>Pengeluaran gak bisa lebih dari uang bulanan.</Text>}
       </View>
 
-      <View style={styles.result}>
-        <Text style={styles.resultLabel}>Saldo impian bulan ini</Text>
+      <Card style={styles.result}>
+        <Label>Saldo impian bulan ini</Label>
         <Text style={styles.resultAmount}>{rupiah(balance)}</Text>
         <Text style={styles.resultHint}>
-          {rupiah(money)} − {rupiah(expenses)}. Sisa saldo bulan ini ikut ke bulan depan.
+          {rupiah(money)} − {rupiah(expenses)}. Sisa saldo ikut ke bulan depan.
         </Text>
-      </View>
+      </Card>
 
-      <View style={shared.bottom}>
-        <PrimaryButton label="Lanjut" onPress={next} disabled={saving} />
-        <Text style={shared.privacy}>Angka ini cuma disimpan di HP kamu.</Text>
+      <View style={onboarding.bottom}>
+        <PrimaryButton label="Lanjut" onPress={next} busy={saving} />
+        <Text style={onboarding.privacy}>Angka ini cuma disimpan di HP kamu.</Text>
       </View>
     </Page>
   );
 }
 
 const styles = StyleSheet.create({
-  limit: { marginTop: 10, fontSize: 14, color: colors.pinkDeep, textAlign: 'center' },
-  result: {
-    marginTop: 28,
-    backgroundColor: colors.mint,
-    borderRadius: radius.md,
-    padding: 18,
-    alignItems: 'center',
-  },
-  resultLabel: { fontSize: 15, color: colors.text },
-  resultAmount: { marginTop: 4, fontSize: 30, fontWeight: '800', color: colors.text },
-  resultHint: { marginTop: 6, fontSize: 13, color: colors.textSoft, textAlign: 'center' },
+  limit: { ...type.small, marginTop: 10, color: colors.warn, textAlign: 'center' },
+  result: { marginTop: 28 },
+  resultAmount: { ...type.money, marginTop: 6, color: colors.text },
+  resultHint: { ...type.small, marginTop: 4, color: colors.textSoft },
 });

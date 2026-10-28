@@ -1,15 +1,13 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text } from 'react-native';
-import { Page } from '@/components/ui';
-import { colors } from '@/theme';
+import { StyleSheet, Text } from 'react-native';
+import { Header, Page } from '@/components/ui';
+import { colors, type } from '@/theme';
 
 // Refund and contact policy (spec.md section 8). Plain words, Indonesian first.
 export default function Refund() {
   return (
     <Page>
-      <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))} accessibilityRole="button">
-        <Text style={styles.back}>‹ Kembali</Text>
-      </Pressable>
+      <Header onBack={() => (router.canGoBack() ? router.back() : router.replace('/'))} />
       <Text style={styles.title}>Kebijakan Refund & Kontak</Text>
 
       <Text style={styles.h}>Uang kembali kalau:</Text>
@@ -44,8 +42,7 @@ export default function Refund() {
 }
 
 const styles = StyleSheet.create({
-  back: { fontSize: 16, color: colors.textSoft, marginBottom: 12 },
-  title: { fontSize: 26, fontWeight: '800', color: colors.text, marginBottom: 8 },
-  h: { marginTop: 18, marginBottom: 6, fontSize: 17, fontWeight: '800', color: colors.text },
-  p: { fontSize: 15, lineHeight: 22, color: colors.text, marginBottom: 4 },
+  title: { ...type.title, color: colors.text, marginBottom: 8 },
+  h: { ...type.h2, fontSize: 16, marginTop: 22, marginBottom: 6, color: colors.text },
+  p: { ...type.body, color: colors.textSoft, marginBottom: 4 },
 });

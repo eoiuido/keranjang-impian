@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { colors } from '@/theme';
+import { colors, radius } from '@/theme';
 
 const N = 21; // cells per side, like a small QR code
 
@@ -21,9 +21,7 @@ function cells(): boolean[][] {
     }
     return null;
   };
-  return Array.from({ length: N }, (_, r) =>
-    Array.from({ length: N }, (_, c) => finder(r, c) ?? rand() > 0.55),
-  );
+  return Array.from({ length: N }, (_, r) => Array.from({ length: N }, (_, c) => finder(r, c) ?? rand() > 0.55));
 }
 
 const GRID = cells();
@@ -31,7 +29,7 @@ const GRID = cells();
 export const FakeQR = memo(function FakeQR({ size }: { size: number }) {
   const cell = size / N;
   return (
-    <View style={[styles.box, { width: size + 24, height: size + 24 }]} accessibilityLabel="QR palsu">
+    <View style={[styles.box, { width: size + 32, height: size + 32 }]} accessibilityLabel="QR palsu">
       {GRID.map((row, r) => (
         <View key={r} style={{ flexDirection: 'row' }}>
           {row.map((on, c) => (
@@ -47,16 +45,24 @@ export const FakeQR = memo(function FakeQR({ size }: { size: number }) {
 });
 
 const styles = StyleSheet.create({
-  box: { backgroundColor: '#FFFFFF', padding: 12, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
+  box: {
+    backgroundColor: colors.white,
+    padding: 16,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.line,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   stamp: {
     position: 'absolute',
-    borderWidth: 4,
-    borderColor: colors.pinkDeep,
-    borderRadius: 12,
+    borderWidth: 3,
+    borderColor: colors.accent,
+    borderRadius: radius.sm,
     paddingHorizontal: 14,
     paddingVertical: 4,
-    backgroundColor: 'rgba(255,248,251,0.9)',
-    transform: [{ rotate: '-14deg' }],
+    backgroundColor: 'rgba(255,255,255,0.94)',
+    transform: [{ rotate: '-12deg' }],
   },
-  stampText: { fontSize: 34, fontWeight: '900', color: colors.pinkDeep, letterSpacing: 4 },
+  stampText: { fontSize: 30, fontWeight: '800', color: colors.accent, letterSpacing: 5 },
 });

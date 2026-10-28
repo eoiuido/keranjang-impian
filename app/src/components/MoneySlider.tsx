@@ -1,7 +1,8 @@
 import { useRef, useState } from 'react';
 import { type GestureResponderEvent, Pressable, StyleSheet, Text, View } from 'react-native';
 import { rupiah } from '@/lib/format';
-import { colors } from '@/theme';
+import { colors, type } from '@/theme';
+import { Icon } from './Icon';
 
 type Props = {
   value: number;
@@ -80,42 +81,46 @@ function RoundButton({ sign, onPress, disabled }: { sign: string; onPress: () =>
       disabled={disabled}
       accessibilityRole="button"
       accessibilityLabel={sign === '+' ? 'Tambah Rp100.000' : 'Kurangi Rp100.000'}
-      style={({ pressed }) => [styles.round, pressed && { opacity: 0.7 }, disabled && { opacity: 0.35 }]}
+      style={({ pressed }) => [styles.round, pressed && { backgroundColor: colors.surface }, disabled && { opacity: 0.3 }]}
     >
-      <Text style={styles.roundText}>{sign}</Text>
+      <Icon name={sign === '+' ? 'plus' : 'minus'} size={20} strokeWidth={2} />
     </Pressable>
   );
 }
 
-const THUMB = 28;
+const THUMB = 26;
 
 const styles = StyleSheet.create({
-  amount: { fontSize: 34, fontWeight: '800', color: colors.text, textAlign: 'center', marginBottom: 16 },
+  amount: { ...type.money, fontSize: 36, lineHeight: 42, color: colors.text, textAlign: 'center', marginBottom: 20 },
   // userSelect: dragging must not highlight the − / + text.
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, userSelect: 'none' },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 14, userSelect: 'none' },
   // Tall invisible touch area; touchAction stops the page scrolling while dragging.
   hit: { flex: 1, height: 48, justifyContent: 'center', touchAction: 'none', cursor: 'pointer' } as object,
-  track: { height: 10, borderRadius: 5, backgroundColor: colors.lavender, overflow: 'hidden' },
-  fill: { height: '100%', backgroundColor: colors.pinkDeep },
+  track: { height: 6, borderRadius: 3, backgroundColor: colors.line, overflow: 'hidden' },
+  fill: { height: '100%', backgroundColor: colors.accent },
   thumb: {
     position: 'absolute',
     width: THUMB,
     height: THUMB,
     marginLeft: -THUMB / 2,
     borderRadius: THUMB / 2,
-    backgroundColor: colors.card,
-    borderWidth: 3,
-    borderColor: colors.pinkDeep,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.line,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
   },
   round: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.pink,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: colors.line,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  roundText: { fontSize: 26, fontWeight: '700', color: colors.text, lineHeight: 28 },
-  ends: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6, paddingHorizontal: 60 },
-  endText: { fontSize: 12, color: colors.textSoft },
+  ends: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6, paddingHorizontal: 58 },
+  endText: { ...type.small, fontSize: 12, color: colors.textFaint },
 });

@@ -1,12 +1,12 @@
 import { Redirect, router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Confetti } from '@/components/Confetti';
+import { StyleSheet, Text, View } from 'react-native';
 import { ItemPicture } from '@/components/ItemPicture';
-import { Page, PrimaryButton } from '@/components/ui';
+import { SuccessMark } from '@/components/SuccessMark';
+import { Card, Page, PrimaryButton, Row, TextButton } from '@/components/ui';
 import { last } from '@/lib/collection';
 import { rupiah } from '@/lib/format';
 import { withInterest } from '@/lib/money';
-import { colors, radius } from '@/theme';
+import { colors, type } from '@/theme';
 
 // S8. Success: the "aha" moment.
 export default function Berhasil() {
@@ -15,62 +15,52 @@ export default function Berhasil() {
   const { item, before, after, debt } = result;
 
   return (
-    <View style={{ flex: 1 }}>
-      <Page>
-        <View style={styles.top}>
-          <Text style={styles.done}>Pembayaran berhasil · Rp0</Text>
-          <ItemPicture item={item} size={160} />
-          <Text style={styles.big}>Kamu baru saja menyelamatkan</Text>
-          <Text style={styles.amount}>{rupiah(item.price)}</Text>
-          <Text style={styles.sub}>{item.name} masuk ke koleksimu. Uang aslimu tetap aman.</Text>
-        </View>
+    <Page>
+      <View style={styles.top}>
+        <SuccessMark />
+        <Text style={styles.done}>Pembayaran berhasil · Rp0</Text>
+        <Text style={styles.big}>Kamu baru saja menyelamatkan</Text>
+        <Text style={styles.amount}>{rupiah(item.price)}</Text>
+        <Text style={styles.sub}>Uang aslimu tetap aman.</Text>
+      </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>Saldo impian</Text>
-          <Text style={styles.cardValue}>
-            {rupiah(before)} → {rupiah(after)}
+      <Card style={styles.itemCard}>
+        <ItemPicture item={item} size={56} />
+        <View style={{ flex: 1 }}>
+          <Text style={styles.itemName} numberOfLines={1}>
+            {item.name}
           </Text>
-          {item.hutang > 0 && (
-            <Text style={styles.debt}>
-              Hutang baru {rupiah(item.hutang)} · Total hutang {rupiah(debt)}
-              {'\n'}Bulan depan dipotong {rupiah(withInterest(debt))}
-            </Text>
-          )}
+          <Text style={styles.itemNote}>Masuk ke koleksimu</Text>
         </View>
+      </Card>
 
-        <View style={styles.bottom}>
-          <PrimaryButton label="Lihat koleksi" onPress={() => router.replace('/koleksi')} />
-          <Pressable onPress={() => router.replace('/barang')} accessibilityRole="button" style={styles.again}>
-            <Text style={styles.againText}>Checkout barang lain</Text>
-          </Pressable>
-        </View>
-      </Page>
-      <Confetti />
-    </View>
+      <Card style={{ marginTop: 12, paddingVertical: 6 }}>
+        <Row first label="Saldo sebelum" value={rupiah(before)} />
+        <Row label="Saldo sekarang" value={rupiah(after)} strong />
+        {item.hutang > 0 && (
+          <>
+            <Row label="Hutang baru" value={rupiah(item.hutang)} />
+            <Row label="Dipotong bulan depan" value={rupiah(withInterest(debt))} />
+          </>
+        )}
+      </Card>
+
+      <View style={styles.bottom}>
+        <PrimaryButton label="Lihat koleksi" onPress={() => router.replace('/koleksi')} />
+        <TextButton label="Checkout barang lain" onPress={() => router.replace('/barang')} />
+      </View>
+    </Page>
   );
 }
 
 const styles = StyleSheet.create({
-  top: { alignItems: 'center', paddingTop: 12 },
-  done: {
-    marginBottom: 20,
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.text,
-    backgroundColor: colors.mint,
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: radius.pill,
-    overflow: 'hidden',
-  },
-  big: { marginTop: 24, fontSize: 20, fontWeight: '600', color: colors.text, textAlign: 'center' },
-  amount: { marginTop: 4, fontSize: 40, fontWeight: '900', color: colors.pinkDeep },
-  sub: { marginTop: 8, fontSize: 16, lineHeight: 22, color: colors.textSoft, textAlign: 'center' },
-  card: { marginTop: 24, backgroundColor: colors.card, borderRadius: radius.md, padding: 16, alignItems: 'center' },
-  cardLabel: { fontSize: 14, color: colors.textSoft },
-  debt: { marginTop: 8, fontSize: 14, lineHeight: 20, color: colors.pinkDeep, textAlign: 'center', fontWeight: '600' },
-  cardValue: { marginTop: 4, fontSize: 20, fontWeight: '800', color: colors.text },
-  bottom: { marginTop: 'auto', paddingTop: 24, gap: 6 },
-  again: { alignSelf: 'center', padding: 12 },
-  againText: { fontSize: 16, fontWeight: '600', color: colors.text, textDecorationLine: 'underline' },
+  top: { alignItems: 'center', paddingTop: 28 },
+  done: { ...type.label, marginTop: 18, color: colors.textSoft, textTransform: 'uppercase' },
+  big: { ...type.body, fontSize: 17, marginTop: 14, color: colors.text, textAlign: 'center' },
+  amount: { ...type.money, fontSize: 42, lineHeight: 50, marginTop: 2, color: colors.accent },
+  sub: { ...type.body, marginTop: 4, color: colors.textSoft, textAlign: 'center' },
+  itemCard: { marginTop: 28, flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12 },
+  itemName: { ...type.body, fontWeight: '700', color: colors.text },
+  itemNote: { ...type.small, color: colors.textSoft },
+  bottom: { marginTop: 'auto', paddingTop: 28, gap: 4 },
 });

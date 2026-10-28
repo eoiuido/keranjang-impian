@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Keranjang Impian",
+    "name": "Spirit Belongings",
     "slug": "keranjang-impian",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,11 +22,11 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro",
       "output": "static",
-      "name": "Keranjang Impian",
-      "shortName": "Keranjang Impian",
+      "name": "Spirit Belongings",
+      "shortName": "Spirit Belongings",
       "lang": "id",
-      "themeColor": "#F7C6D9",
-      "backgroundColor": "#FFF8FB"
+      "themeColor": "#FFFFFF",
+      "backgroundColor": "#FFFFFF"
     },
     "plugins": [
       "expo-router"

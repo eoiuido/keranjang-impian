@@ -48,7 +48,7 @@ const C = 34;
 const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: 'rgba(40,26,38,0.94)',
+    backgroundColor: 'rgba(17,17,20,0.94)',
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10,
@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   tr: { top: 0, right: 0, borderTopWidth: 5, borderRightWidth: 5, borderTopRightRadius: 12 },
   bl: { bottom: 0, left: 0, borderBottomWidth: 5, borderLeftWidth: 5, borderBottomLeftRadius: 12 },
   br: { bottom: 0, right: 0, borderBottomWidth: 5, borderRightWidth: 5, borderBottomRightRadius: 12 },
-  line: { position: 'absolute', top: 0, left: 10, right: 10, height: 4, borderRadius: 2, backgroundColor: colors.mint },
+  line: { position: 'absolute', top: 0, left: 10, right: 10, height: 4, borderRadius: 2, backgroundColor: colors.accent },
   status: { marginTop: 28, flexDirection: 'row', alignItems: 'center', gap: 10 },
   text: { color: '#FFFFFF', fontSize: 17 },
 });
