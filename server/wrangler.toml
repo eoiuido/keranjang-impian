@@ -28,7 +28,9 @@ crons = ["*/5 * * * *"]
 [vars]
 DOKU_BASE_URL = "https://api-sandbox.doku.com" # production: https://api.doku.com
 APP_URL = "https://spirit-belongings.eoi-apps.my.id" # where DOKU sends the buyer back after paying
+# Sender for login codes. mail.eoi-apps.my.id is the shared EOI sending subdomain (verified in Resend).
+EMAIL_FROM = "Spirit Belongings <kode@mail.eoi-apps.my.id>"
 # Local development overrides APP_URL and adds ALLOWED_ORIGIN in .dev.vars.
 
-# Secrets (never in this file): DOKU_CLIENT_ID, DOKU_SECRET_KEY.
+# Secrets (never in this file): DOKU_CLIENT_ID, DOKU_SECRET_KEY, RESEND_API_KEY.
 # Local: put them in .dev.vars. Online: `npx wrangler secret put DOKU_SECRET_KEY`.
