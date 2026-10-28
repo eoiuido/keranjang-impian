@@ -2,6 +2,7 @@
 // Photos and the address never leave the phone (the server also removes them).
 import { fetchBackup, uploadBackup } from './api';
 import { getCheckoutCount, getItems, type SavedItem } from './collection';
+import { getGoal, type Goal } from './goal';
 import { isPaid } from './plan';
 import { getProfile, type Profile, type Wallet } from './profile';
 import { getItem, setItem } from './store';
@@ -15,15 +16,17 @@ export type BackupData = {
   items: BackupItem[];
   checkoutsUsed: number;
   declineOfferSeen: boolean;
+  goal?: Goal | null;
 };
 
 async function build(): Promise<BackupData> {
-  const [profile, wallet, items, checkoutsUsed, declineOfferSeen] = await Promise.all([
+  const [profile, wallet, items, checkoutsUsed, declineOfferSeen, goal] = await Promise.all([
     getProfile(),
     getItem<Wallet>('wallet'),
     getItems(),
     getCheckoutCount(),
     getItem<boolean>('declineOfferSeen'),
+    getGoal(),
   ]);
   return {
     version: 1,
@@ -32,6 +35,7 @@ async function build(): Promise<BackupData> {
     items: items.map(({ photo: _photo, ...rest }) => rest),
     checkoutsUsed,
     declineOfferSeen: declineOfferSeen === true,
+    goal,
   };
 }
 
@@ -77,5 +81,6 @@ export async function restoreBackup(token: string): Promise<boolean> {
   await setItem('items', items);
   await setItem('checkoutsUsed', Math.max(localCount, data.checkoutsUsed));
   await setItem('declineOfferSeen', localOffer === true || data.declineOfferSeen);
+  if (data.goal && !(await getGoal())) await setItem('goal', data.goal);
   return true;
 }

@@ -160,8 +160,8 @@ function Confirm({ orderId }: { orderId: string }) {
           <Row label="Email" value={order.email ?? '-'} />
         </Card>
         <View style={s.bottom}>
-          <PrimaryButton label="Lanjut checkout palsu" onPress={() => router.replace('/barang')} />
-          <SecondaryButton label="Lihat koleksi" onPress={() => router.replace('/koleksi')} />
+          <PrimaryButton label="Pasang target tabungan" icon="target" onPress={() => router.replace('/target')} />
+          <SecondaryButton label="Lanjut checkout palsu" onPress={() => router.replace('/barang')} />
         </View>
       </Page>
     );

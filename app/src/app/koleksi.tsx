@@ -1,17 +1,19 @@
 import { Redirect, router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import { Icon } from '@/components/Icon';
+import { Icon, type IconName } from '@/components/Icon';
 import { ItemPicture } from '@/components/ItemPicture';
 import { Brand, Card, Page, PrimaryButton, Row } from '@/components/ui';
 import { syncBackupIfDirty } from '@/lib/backup';
 import { getCheckoutCount, getItems, type SavedItem } from '@/lib/collection';
-import { rupiah } from '@/lib/format';
+import { monthKey, rupiah } from '@/lib/format';
+import { type Goal, getGoal, goalIcon, goalPercent } from '@/lib/goal';
 import { type Access, FREE_CHECKOUTS, getAccess, getPendingOrder, type PendingOrder, PLANS } from '@/lib/plan';
 import { loadWallet, type Wallet } from '@/lib/profile';
+import { monthLabel } from '@/lib/recap';
 import { colors, maxWidth, radius, type } from '@/theme';
 
-type Data = { wallet: Wallet; items: SavedItem[]; count: number; pending: PendingOrder | null; access: Access | null };
+type Data = { wallet: Wallet; items: SavedItem[]; count: number; pending: PendingOrder | null; access: Access | null; goal: Goal | null };
 
 const GAP = 12;
 const PAD = 20; // Page side padding
@@ -26,9 +28,9 @@ export default function Koleksi() {
   useFocusEffect(
     useCallback(() => {
       syncBackupIfDirty(); // retry an upload that failed while offline
-      Promise.all([loadWallet(), getItems(), getCheckoutCount(), getPendingOrder(), getAccess()]).then(
-        ([wallet, items, count, pending, access]) =>
-          setData(wallet ? { wallet, items, count, pending: pending ?? null, access: access ?? null } : null),
+      Promise.all([loadWallet(), getItems(), getCheckoutCount(), getPendingOrder(), getAccess(), getGoal()]).then(
+        ([wallet, items, count, pending, access, goal]) =>
+          setData(wallet ? { wallet, items, count, pending: pending ?? null, access: access ?? null, goal } : null),
       );
     }, []),
   );
@@ -36,7 +38,7 @@ export default function Koleksi() {
   if (data === null) return <Redirect href="/mulai" />; // onboarding not done yet
   if (!data) return <Page>{null}</Page>;
 
-  const { wallet, items, count, pending, access } = data;
+  const { wallet, items, count, pending, access, goal } = data;
   const paidActive = !!access && new Date(access.endsAt).getTime() > Date.now();
   const saved = items.reduce((sum, i) => sum + i.price, 0);
   const freeLeft = Math.max(0, FREE_CHECKOUTS - count);
@@ -66,6 +68,34 @@ export default function Koleksi() {
       <Text style={styles.savedLabel}>Total uang yang kamu selamatkan</Text>
       <Text style={styles.savedAmount}>{rupiah(saved)}</Text>
       <Text style={styles.savedSub}>dari {items.length} barang yang gak jadi kamu beli beneran</Text>
+
+      {paidActive ? (
+        <>
+          {goal ? (
+            <Pressable onPress={() => router.push('/target')} accessibilityRole="button" style={styles.goal}>
+              <View style={styles.goalTop}>
+                <Icon name={goalIcon(goal.type)} size={20} />
+                <Text style={styles.goalName} numberOfLines={1}>
+                  {goal.name}
+                </Text>
+                <Text style={styles.goalPct}>{goalPercent(saved, goal.target)}%</Text>
+              </View>
+              <View style={styles.bar}>
+                <View style={[styles.barFill, { width: `${goalPercent(saved, goal.target)}%` }]} />
+              </View>
+              <Text style={styles.goalNote}>
+                {rupiah(Math.min(saved, goal.target))} dari {rupiah(goal.target)}
+                {saved >= goal.target ? ' · Tercapai!' : ''}
+              </Text>
+            </Pressable>
+          ) : (
+            <LinkRow icon="target" title="Pasang target tabungan" note="Misal laptop atau HP impian" onPress={() => router.push('/target')} />
+          )}
+          <LinkRow icon="calendar" title={`Rekap ${monthLabel(monthKey())}`} note="Kartu yang bisa kamu bagikan" onPress={() => router.push('/rekap')} />
+        </>
+      ) : (
+        <LinkRow icon="lock" title="Target tabungan & rekap bulanan" note="Ada di paket berbayar" badge="Paket" onPress={() => router.push('/paywall')} />
+      )}
 
       <Card style={{ marginTop: 20, paddingVertical: 6 }}>
         <Row first label="Saldo bulan ini" value={rupiah(wallet.balance)} />
@@ -110,7 +140,38 @@ export default function Koleksi() {
   );
 }
 
+function LinkRow({ icon, title, note, badge, onPress }: { icon: IconName; title: string; note: string; badge?: string; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" style={({ pressed }) => [styles.linkRow, pressed && { backgroundColor: colors.surface }]}>
+      <Icon name={icon} size={20} />
+      <View style={{ flex: 1 }}>
+        <Text style={styles.linkTitle}>{title}</Text>
+        <Text style={styles.linkNote}>{note}</Text>
+      </View>
+      {badge ? (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{badge}</Text>
+        </View>
+      ) : (
+        <Icon name="arrowRight" size={16} color={colors.textFaint} />
+      )}
+    </Pressable>
+  );
+}
+
 const styles = StyleSheet.create({
+  goal: { marginTop: 20, borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, padding: 16, gap: 10 },
+  goalTop: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  goalName: { ...type.body, fontWeight: '700', flex: 1, color: colors.text },
+  goalPct: { fontSize: 18, fontWeight: '800', color: colors.accent },
+  bar: { height: 8, borderRadius: 4, backgroundColor: colors.surface, overflow: 'hidden' },
+  barFill: { height: '100%', borderRadius: 4, backgroundColor: colors.accent },
+  goalNote: { ...type.small, color: colors.textSoft },
+  linkRow: { marginTop: 12, flexDirection: 'row', alignItems: 'center', gap: 14, borderWidth: 1, borderColor: colors.line, borderRadius: radius.lg, paddingHorizontal: 16, paddingVertical: 14 },
+  linkTitle: { ...type.body, fontWeight: '600', color: colors.text },
+  linkNote: { ...type.small, color: colors.textSoft },
+  badge: { backgroundColor: colors.accentSoft, borderRadius: radius.pill, paddingHorizontal: 8, paddingVertical: 3 },
+  badgeText: { fontSize: 11, fontWeight: '700', color: colors.accent },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   pending: {
     marginTop: 16,
