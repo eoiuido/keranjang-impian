@@ -106,7 +106,7 @@ export default function Checkout() {
             {skin && (
               <Display style={styles.cartTitle}>
                 {skin === 'butik' ? 'Satu langkah lagi, sayang.' : 'Checkout '}
-                {skin === 'stiker' && <Text style={{ color: colors.accent }}>dulu!</Text>}
+                {skin === 'stiker' && <Text style={{ color: colors.accent }}>dulu! ♡</Text>}
               </Display>
             )}
             <View style={styles.itemRow}>

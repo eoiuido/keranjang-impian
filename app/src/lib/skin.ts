@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { SkinName } from '@/theme';
+import { SKINS, type SkinName } from '@/theme';
 
 // The chosen skin lives in localStorage so +html.tsx can apply it before the first paint.
 const KEY = 'sb-skin';
@@ -18,7 +18,10 @@ export function setSkin(s: SkinName) {
   try {
     localStorage.setItem(KEY, s);
   } catch {}
-  if (typeof document !== 'undefined') document.documentElement.setAttribute('data-skin', s);
+  if (typeof document !== 'undefined') {
+    document.documentElement.setAttribute('data-skin', s);
+    document.querySelector('meta[name=theme-color]')?.setAttribute('content', SKINS[s].browserBar);
+  }
   listeners.forEach((l) => l(s));
 }
 

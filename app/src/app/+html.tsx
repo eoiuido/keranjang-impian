@@ -1,6 +1,6 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 import type { PropsWithChildren } from 'react';
-import { skinCss } from '@/theme';
+import { SKINS, skinCss } from '@/theme';
 
 // Runs only at build time: the HTML wrapper around every page.
 const css = `
@@ -14,7 +14,7 @@ input, textarea { outline: none; }
 `;
 
 // Applies the saved skin before anything is drawn, so there is no flash of the wrong look.
-const applySkin = `try{var s=localStorage.getItem('sb-skin');if(s==='butik'||s==='stiker')document.documentElement.setAttribute('data-skin',s)}catch(e){}`;
+const applySkin = `try{var s=localStorage.getItem('sb-skin');if(s==='butik'||s==='stiker'){document.documentElement.setAttribute('data-skin',s);var m=document.querySelector('meta[name=theme-color]');if(m)m.content=${JSON.stringify(Object.fromEntries(Object.entries(SKINS).map(([k, t]) => [k, t.browserBar])))}[s]}}catch(e){}`;
 
 export default function Root({ children }: PropsWithChildren) {
   return (
@@ -37,7 +37,7 @@ export default function Root({ children }: PropsWithChildren) {
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
           rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Bodoni+Moda:ital,wght@0,500;0,700;1,500&family=Bricolage+Grotesque:wght@600;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Bodoni+Moda:ital,wght@0,500;0,700;1,500&family=Fredoka:wght@500;600;700&display=swap"
         />
         <script dangerouslySetInnerHTML={{ __html: applySkin }} />
         <ScrollViewStyleReset />

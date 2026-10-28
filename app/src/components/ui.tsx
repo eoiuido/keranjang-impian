@@ -13,7 +13,7 @@ export function Page({ children, bg = colors.bg, skin }: { children: ReactNode; 
     <ScrollView
       {...(skin ? data({ skin }) : {})}
       style={{ backgroundColor: bg }}
-      contentContainerStyle={[styles.page, { backgroundColor: bg }]}
+      contentContainerStyle={[styles.page, { backgroundColor: bg }, { backgroundImage: shape.bgImage } as object]}
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.column}>{children}</View>
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   iconBtn: { width: 40, height: 40, justifyContent: 'center' },
   brand: { ...type.label, fontSize: 12, letterSpacing: 1.6, color: colors.text },
   button: { alignSelf: 'stretch', borderRadius: radius.md, paddingVertical: 16, alignItems: 'center', justifyContent: 'center', minHeight: 54 },
-  accent: { backgroundColor: colors.accent, borderWidth: shape.border, borderColor: colors.line, boxShadow: shape.shadow },
+  accent: { backgroundColor: colors.accent, borderWidth: shape.border, borderColor: colors.line, boxShadow: shape.shadow, ...({ backgroundImage: shape.accentImage } as object) },
   // Real-money buttons stay plain dark in every skin.
   ink: { backgroundColor: colors.ink, borderRadius: 14 },
   inkText: { color: colors.white, textTransform: 'none', letterSpacing: 0 },

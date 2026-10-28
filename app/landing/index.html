@@ -16,8 +16,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Font loads without blocking the first paint; the system font shows until it arrives. -->
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Bodoni+Moda:ital,wght@1,500&family=Bricolage+Grotesque:wght@800&display=swap" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Bodoni+Moda:ital,wght@1,500&family=Bricolage+Grotesque:wght@800&display=swap"></noscript>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Bodoni+Moda:ital,wght@1,500&family=Fredoka:wght@600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Bodoni+Moda:ital,wght@1,500&family=Fredoka:wght@600;700&display=swap"></noscript>
 <!--PREFETCH-->
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
@@ -35,14 +35,17 @@
   .lux .p{font-family:'Bodoni Moda',Didot,serif;font-size:18px;color:#E9D3A4;margin-top:6px}
   .lux .seal{position:absolute;top:16px;left:16px;width:40px;height:40px;border-radius:50%;border:1px solid #D9B98A;padding:4px}
   .lux .seal i{display:block;width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,#8C6A3B,#E9D3A4 40%,#B48A4E 60%,#F4E4C1)}
-  .y2k{right:0;top:44px;transform:rotate(5deg);color:#111;background:linear-gradient(120deg,#FFB3E1,#C9B6FF 30%,#A8F0FF 60%,#FFF1A8);border:2.5px solid #111;box-shadow:5px 5px 0 #111}
-  .y2k .n{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;line-height:1;letter-spacing:-.6px}
-  .y2k .p{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin-top:6px}
-  .burst{position:absolute;top:-22px;right:-14px;width:78px;height:78px;background:#E8FF5A;clip-path:polygon(50% 0,61% 32%,95% 20%,72% 48%,100% 70%,64% 68%,58% 100%,44% 70%,10% 86%,30% 56%,0 30%,36% 34%);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;transform:rotate(-8deg)}
-  .stamp{position:absolute;left:50%;bottom:0;transform:translateX(-50%) rotate(-3deg);background:#fff;border:2px solid #D6336C;color:#D6336C;border-radius:999px;padding:8px 16px;font-size:14px;font-weight:800;white-space:nowrap;box-shadow:0 6px 16px rgba(214,51,108,.18)}
+  .y2k{right:0;top:44px;transform:rotate(5deg);color:#4A1032;border-radius:26px;background:linear-gradient(135deg,#FFC4DF 0%,#FF9ACB 45%,#E9CCFF 100%);border:2px solid #F0569A;box-shadow:5px 6px 0 #FFB0D3}
+  .y2k .n{font-family:'Fredoka',sans-serif;font-weight:700;font-size:26px;line-height:1}
+  .y2k .p{font-family:'Fredoka',sans-serif;font-weight:600;font-size:20px;margin-top:6px}
+  .y2k .h{position:absolute;right:22px;top:58px;font-size:46px;color:#fff;transform:rotate(12deg);line-height:1}
+  .burst{position:absolute;top:-24px;right:-12px;width:84px;height:84px;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:700;font-size:16px;color:#fff;transform:rotate(-8deg)}
+  .burst svg{position:absolute;inset:0}
+  .burst span{position:relative;margin-top:-6px}
+  .stamp{position:absolute;left:50%;bottom:0;transform:translateX(-50%) rotate(-3deg);background:#fff;border:2px solid #FF4FA3;color:#E93A8E;border-radius:999px;padding:8px 16px;font-size:14px;font-weight:800;white-space:nowrap;box-shadow:0 6px 16px rgba(214,51,108,.18)}
   h1{margin-top:26px;font-size:40px;line-height:1.02;letter-spacing:-.5px}
   h1 .a{display:block;font-family:'Bodoni Moda',Didot,serif;font-style:italic;font-weight:500}
-  h1 .b{display:block;font-family:'Bricolage Grotesque','Plus Jakarta Sans',sans-serif;font-weight:800;color:#D6336C;letter-spacing:-1.4px}
+  h1 .b{display:block;font-family:'Fredoka','Plus Jakarta Sans',sans-serif;font-weight:700;color:#FF4FA3;letter-spacing:-.5px}
   .sub{margin-top:12px;font-size:16px;line-height:24px;color:#6E5F68}
   .cta{margin-top:26px;display:flex;flex-direction:column;gap:10px}
   .btn{display:flex;align-items:center;justify-content:center;min-height:56px;border-radius:999px;background:#1A1016;color:#fff;font-size:16px;font-weight:800;text-decoration:none;box-shadow:4px 4px 0 #D6336C}
@@ -53,7 +56,7 @@
   .styles em{font-style:normal;color:#6E5F68;font-weight:600}
   .styles span{padding:5px 11px;border-radius:999px}
   .styles .s1{background:#2A0F22;color:#E9D3A4;font-family:'Bodoni Moda',serif;font-style:italic;font-weight:500;font-size:13px}
-  .styles .s2{background:#E8FF5A;border:2px solid #111;font-family:'Bricolage Grotesque',sans-serif;font-weight:800}
+  .styles .s2{background:#FFE0EE;border:2px solid #F0569A;color:#D6337E;font-family:'Fredoka',sans-serif;font-weight:700;font-size:13px}
   footer{margin-top:auto;padding-top:36px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
   footer a.login{font-size:14px;font-weight:700;color:#1A1016}
   footer p{font-size:12px;line-height:18px;color:#9C8E96}
@@ -65,7 +68,7 @@
   <div class="brand">SPIRIT BELONGINGS</div>
   <div class="hero" aria-hidden="true">
     <div class="card lux"><div class="seal"><i></i></div><div class="k">BUTIK</div><div class="n">Tas Mini</div><div class="p">Rp850.000</div></div>
-    <div class="card y2k"><div class="burst">YES!</div><div class="n">Sneakers</div><div class="p">Rp1.200.000</div></div>
+    <div class="card y2k"><div class="burst"><svg viewBox="0 0 24 24" width="84" height="84"><defs><linearGradient id="hg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF9ACB"/><stop offset=".6" stop-color="#FF4FA3"/><stop offset="1" stop-color="#E93A8E"/></linearGradient></defs><path fill="url(#hg)" d="M12 21s-8.5-5.2-8.5-11.2A4.8 4.8 0 0 1 12 7a4.8 4.8 0 0 1 8.5 2.8C20.5 15.8 12 21 12 21z"/></svg><span>YAY!</span></div><div class="h">♥</div><div class="n">Sneakers</div><div class="p">Rp1.200.000</div></div>
     <div class="stamp">Kamu bayar Rp0 · Dompet aman</div>
   </div>
   <h1><span class="a">Checkout palsu.</span><span class="b">Dompet aman.</span></h1>
@@ -73,7 +76,7 @@
   <div class="cta">
     <a id="start" class="btn" href="/gaya">Coba checkout palsu</a>
     <p class="note">Gratis 3 kali · Tanpa daftar</p>
-    <div class="styles"><em>2 gaya:</em><span class="s1">Butik</span><span class="s2">Stiker</span></div>
+    <div class="styles"><em>2 gaya:</em><span class="s1">Butik</span><span class="s2">Stiker ♡</span></div>
   </div>
   <footer>
     <a class="login" href="/masuk">Sudah bayar? Masuk</a>

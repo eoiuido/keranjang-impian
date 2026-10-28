@@ -6,10 +6,12 @@ import { Card, Page, PrimaryButton, Row, TextButton, Display } from '@/component
 import { last } from '@/lib/collection';
 import { rupiah } from '@/lib/format';
 import { withInterest } from '@/lib/money';
+import { useSkin } from '@/lib/skin';
 import { colors, type } from '@/theme';
 
 // S8. Success: the "aha" moment.
 export default function Berhasil() {
+  const skin = useSkin();
   const result = last.result;
   if (!result) return <Redirect href="/koleksi" />;
   const { item, before, after, debt } = result;
@@ -21,7 +23,7 @@ export default function Berhasil() {
         <Text style={styles.done}>Pembayaran berhasil · Rp0</Text>
         <Text style={styles.big}>Kamu baru saja menyelamatkan</Text>
         <Display kind="money" style={styles.amount}>{rupiah(item.price)}</Display>
-        <Text style={styles.sub}>Uang aslimu tetap aman.</Text>
+        <Text style={styles.sub}>{skin === 'stiker' ? 'Uang aslimu tetap aman ♡' : 'Uang aslimu tetap aman.'}</Text>
       </View>
 
       <Card style={styles.itemCard}>
